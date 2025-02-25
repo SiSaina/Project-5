@@ -1,0 +1,97 @@
+﻿@{
+    ViewData["Title"] = "Employee Page";
+}
+
+<h1 class="text-center">Employee Management</h1>
+
+<div class="container mt-4">
+    <h2>Supervisors</h2>
+    <table class="table table-bordered">
+        <thead class="table-dark">
+            <tr>
+                <th>Supervisor ID</th>
+                <th>User ID</th>
+                <th>Full Name</th>
+                <th>Status</th>
+                <th>Email</th>
+                <th>Phone Number</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var supervisor in Model.Supervisors)
+            {
+                <tr>
+                    <td>@supervisor.Id</td>
+                    <td>@supervisor.UserId</td>
+                    <td>@supervisor.User.FirstName @supervisor.User.LastName</td>
+                    <td>@supervisor.Status</td>
+                    <td>@supervisor.User.Email</td>
+                    <td>@supervisor.User.PhoneNumber</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <h2>Coaches</h2>
+    <table class="table table-bordered">
+        <thead class="table-dark">
+            <tr>
+                <th>Coach ID</th>
+                <th>User ID</th>
+                <th>Full Name</th>
+                <th>Status</th>
+                <th>Specialization</th>
+                <th>Email</th>
+                <th>Phone Number</th>
+            </tr>
+        </thead> 
+        <tbody>
+            @if (Model.Supervisors != null && Model.Supervisors.Any())
+            {
+                @foreach (var supervisor in Model.Supervisors)
+                {
+                    <tr>
+                        <td>@supervisor.Id</td>
+                        <td>@supervisor.UserId</td>
+                        <td>@supervisor.User.FirstName @supervisor.User.LastName</td>
+                        <td>@supervisor.Status</td>
+                        <td>@supervisor.User.Email</td>
+                        <td>@supervisor.User.PhoneNumber</td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+
+    <h2>All Users</h2>
+    <table class="table table-bordered">
+        <thead class="table-dark">
+            <tr>
+                <th>User ID</th>
+                <th>Username</th>
+                <th>Full Name</th>
+                <th>Gender</th>
+                <th>Email</th>
+                <th>Phone Number</th>
+                <th>Date of Birth</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.Coaches != null && Model.Coaches.Any())
+            {
+                @foreach (var coach in Model.Coaches)
+                {
+                    <tr>
+                        <td>@coach.Id</td>
+                        <td>@coach.UserId</td>
+                        <td>@coach.User.FirstName @coach.User.LastName</td>
+                        <td>@coach.Status</td>
+                        <td>@coach.Specialization</td>
+                        <td>@coach.User.Email</td>
+                        <td>@coach.User.PhoneNumber</td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>
