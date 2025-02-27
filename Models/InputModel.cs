@@ -1,7 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ExamProjectOne.Models
 {
+    [NotMapped]
     public class LogInModel
     {
         [Required]
@@ -18,6 +20,7 @@ namespace ExamProjectOne.Models
         [Display(Name = "Password")]
         public string Password { get; set; } = string.Empty;
     }
+    [NotMapped]
     public class RegisterModel : LogInModel
     {
         [Required]
@@ -41,12 +44,17 @@ namespace ExamProjectOne.Models
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
         public string ConfirmPassword { get; set; } = string.Empty;
     }
+    [NotMapped]
     public class EmployeeModel : RegisterModel
     {
+        public int Id { get; set; }
         [Required]
         public string Role { get; set; } = string.Empty;
         [Required]
         public string Status { get; set; } = string.Empty;
+        public string ShiftTime { get; set; }
+        public string WorkDay { get; set; }
+        public string Specialize { get; set; } = string.Empty;
     }
 
 }

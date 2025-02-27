@@ -5,23 +5,51 @@
 
 <h1>Add Employee</h1>
 
-<form asp-controller="Employee" asp-action="CreateEmployee" method="post">
+<form asp-controller="Employee" asp-action="AddEmployee" method="post">
     <div class="form-floating mb-3">
         <input asp-for="Username" class="form-control" autocomplete="username" aria-required="true" placeholder="Username" />
         <label asp-for="Username">Username</label>
         <span asp-validation-for="Username" class="text-danger"></span>
     </div>
     <div class="form-floating mb-3">
-        <input asp-for="Email" class="form-control" autocomplete="username" aria-required="true" placeholder="name@example.com" />
+        <input asp-for="FirstName" class="form-control" autocomplete="FirstName" aria-required="true" placeholder="FirstName" />
+        <label asp-for="FirstName">FirstName</label>
+        <span asp-validation-for="FirstName" class="text-danger"></span>
+    </div>
+    <div class="form-floating mb-3">
+        <input asp-for="LastName" class="form-control" autocomplete="LastName" aria-required="true" placeholder="LastName" />
+        <label asp-for="LastName">LastName</label>
+        <span asp-validation-for="LastName" class="text-danger"></span>
+    </div>
+    <div class="form-floating mb-3">
+        <input asp-for="Email" class="form-control" autocomplete="Email" aria-required="true" placeholder="name@example.com" />
         <label asp-for="Email">Email</label>
         <span asp-validation-for="Email" class="text-danger"></span>
+    </div>
+    <div class="form-floating mb-3">
+        <input asp-for="PhoneNumber" class="form-control" autocomplete="tel" aria-required="true" placeholder="Phone Number" />
+        <label asp-for="PhoneNumber">Phone Number</label>
+        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+    </div>
+    <div class="form-floating mb-3">
+        <input asp-for="BirthDate" type="date" class="form-control" aria-required="true" placeholder="Birth Date" />
+        <label asp-for="BirthDate">Birth Date</label>
+        <span asp-validation-for="BirthDate" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Gender" class="form-label">Gender</label>
+        <select asp-for="Gender" class="form-control">
+            <option value="">Select Gender</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+        </select>
+        <span asp-validation-for="Gender" class="text-danger"></span>
     </div>
     <div class="form-floating mb-3">
         <input asp-for="Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
         <label asp-for="Password">Password</label>
         <span asp-validation-for="Password" class="text-danger"></span>
     </div>
-
     <div class="form-floating mb-3">
         <input asp-for="ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
         <label asp-for="ConfirmPassword">Confirm Password</label>
@@ -32,8 +60,23 @@
         <select asp-for="Status" class="form-control">
             <option value="">Select a status</option>
             <option value="Regular">Regular</option>
-            <option value="Head">Head</option>
             <option value="Senior">Senior</option>
+        </select>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Shift Time</label>
+        <select name="ShiftTime" class="form-control">
+            <option value="">Select a shift</option>
+            <option value="7:30 AM - 5:00 PM">7:30 AM - 5:00 PM</option>
+            <option value="5:00 PM - 12:00 AM">5:00 PM - 12:00 AM</option>
+        </select>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Work Days</label>
+        <select name="WorkDay" class="form-control">
+            <option value="">Select work days</option>
+            <option value="Monday - Friday">Monday - Friday</option>
+            <option value="Saturday - Sunday">Saturday - Sunday</option>
         </select>
     </div>
     <div class="mb-3">
@@ -47,19 +90,14 @@
 
     <div id="coachFields" style="display: none;">
         <div class="mb-3">
-            <label class="form-label">Specialization</label>
-            <select name="Specialization" class="form-control">
-                <option value="">Select a specialization</option>
+            <label class="form-label">Specialize</label>
+            <select name="Specialize" class="form-control">
+                <option value="">Select a Specialize</option>
                 <option value="Gym">Gym</option>
                 <option value="Yoga">Yoga</option>
                 <option value="Swimming">Swimming</option>
                 <option value="Dance">Dance</option>
             </select>
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">Working Hour</label>
-            <input type="time" name="WorkingHour" class="form-control" />
         </div>
     </div>
 

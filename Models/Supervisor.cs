@@ -9,10 +9,14 @@ namespace ExamProjectOne.Models
         [Key]
         public int Id { get; set; }
         [Required]
-        public string UserId { get; set; }
+        public string? UserId { get; set; }
         [Required]
-        public string Status { get; set; }
+        public string? Status { get; set; }
+        [Required]
+        public string ShiftTime { get; set; }
+        [Required]
+        public string WorkDay { get; set; }
         [ForeignKey("UserId")]
-        public ApplicationUser User { get; set; }
+        public ApplicationUser? User { get; set; }
     }
 }

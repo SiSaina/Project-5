@@ -3,15 +3,9 @@ using ExamProjectOne.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis.Scripting;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.BlazorIdentity.Pages.Manage;
-using System.ComponentModel.DataAnnotations;
-using System.Data;
-using ExamProjectOne.Data;
-using ExamProjectOne.Models;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Data;
 
 namespace ExamProjectOne.Controllers
 {
@@ -31,13 +25,12 @@ namespace ExamProjectOne.Controllers
             _signInManager = signInManager;
         }
 
-        public IActionResult Employee()
+        public async Task<IActionResult> Employee()
         {
-            ViewBag.Supervisors = _context.Supervisors.Include(s => s.User).ToList();
-            ViewBag.Coaches = _context.Coaches.Include(c => c.User).ToList();
-            ViewBag.AspNetUsers = _context.Users.ToList();
+            var supervisors = await _context.Supervisors.Include(s => s.User).ToListAsync();
+            var coaches = await _context.Coaches.Include(c => c.User).ToListAsync();
 
-            return View();
+            return View(new { Supervisors = supervisors, Coaches = coaches });
         }
 
         [HttpGet]
@@ -46,67 +39,213 @@ namespace ExamProjectOne.Controllers
             return View();
         }
         [HttpPost]
-        public async Task<IActionResult> AddEmployee([Bind("Specialization, WorkingHour")] EmployeeModel model)
+        public async Task<IActionResult> AddEmployee(EmployeeModel model)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
+                return View(model);
+
+            var user = new ApplicationUser
             {
-                var user = new ApplicationUser
-                {
-                    UserName = model.Username,
-                    Email = model.Email,
-                    FirstName = model.FirstName,
-                    LastName = model.LastName,
-                    Gender = model.Gender,
-                    PhoneNumber = model.PhoneNumber,
-                    DateOfBirth = model.BirthDate,
-                    EmailConfirmed = true
-                };
+                UserName = model.Username,
+                Email = model.Email,
+                FirstName = model.FirstName,
+                LastName = model.LastName,
+                Gender = model.Gender,
+                PhoneNumber = model.PhoneNumber,
+                DateOfBirth = model.BirthDate,
+                EmailConfirmed = true
+            };
 
-                var result = await _userManager.CreateAsync(user, model.Password);
+            var result = await _userManager.CreateAsync(user, model.Password);
 
-                if (result.Succeeded)
-                {
-                    _logger.LogInformation("User created a new account with password.");
-
-                    if (model.Role == "Coach")
-                    {
-                        string specialization = Request.Form["Specialization"];
-                        TimeOnly workingHour = TimeOnly.Parse(Request.Form["WorkingHour"]);
-
-                        var coach = new Coach
-                        {
-                            UserId = user.Id,
-                            Specialization = specialization,
-                            WorkingHour = workingHour,
-                            Status = model.Status
-                        };
-                        _context.Coaches.Add(coach);
-                        await _userManager.AddToRoleAsync(user, model.Status == "Regular" ? "Coach" : "Senior Coach");
-
-                    }
-                    else if (model.Role == "Supervisor")
-                    {
-                        var supervisor = new Supervisor
-                        {
-                            UserId = user.Id,
-                            Status = model.Status
-                        };
-                        _context.Supervisors.Add(supervisor);
-                        await _userManager.AddToRoleAsync(user, model.Status == "Regular" ? "Supervisor" : "Senior supervisor");
-                    }
-
-                    return RedirectToAction("Employee");
-                }
-
+            if (!result.Succeeded)
+            {
                 foreach (var error in result.Errors)
-                {
                     ModelState.AddModelError(string.Empty, error.Description);
-                }
+
+                return View(model);
+            }
+
+            //Create employee
+            var employee = CreateEmployee(model, user.Id);
+            if (employee is Coach coach)
+                _context.Coaches.Add(coach);
+            else if (employee is Supervisor supervisor)
+                _context.Supervisors.Add(supervisor);
+
+            //Role
+            string role = model.Status == "Regular" ? model.Role : $"Senior {model.Role}";
+            await _userManager.AddToRoleAsync(user, role);
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction("Employee");
+        }
+
+        public IActionResult EditEmployee(int id, string role)
+        {
+            var em = role?.ToLower() == "coach"
+                ? _context.Coaches.Include(c => c.User).FirstOrDefault(e => e.Id == id) as dynamic
+                : _context.Supervisors.Include(s => s.User).FirstOrDefault(e => e.Id == id);
+
+            if (em == null) return NotFound(); 
+
+            var model = new EmployeeModel
+            {
+                Id = em.Id,
+                Username = em.User?.UserName ?? "", 
+                FirstName = em.User?.FirstName ?? "",
+                LastName = em.User?.LastName ?? "",
+                Email = em.User?.Email ?? "",
+                PhoneNumber = em.User?.PhoneNumber ?? "",
+                BirthDate = em.User?.DateOfBirth,
+                Gender = em.User?.Gender ?? "",
+                Status = em.Status,
+                Role = role ?? "Regular",
+                ShiftTime = em.ShiftTime,
+                WorkDay = em.WorkDay,
+                Specialize = role?.ToLower() == "coach" ? em.Specialize : null,
+            };
+
+
+            return View(model);
+        }
+        [HttpPost]
+        public async Task<IActionResult> EditEmployee(EmployeeModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var coach = await _context.Coaches.Include(c => c.User).FirstOrDefaultAsync(c => c.Id == model.Id);
+            string? specizalize = Request.Form["Specialize"];
+            if (coach != null)
+            {
+                coach.Status = model.Status;
+                coach.ShiftTime = model.ShiftTime;
+                coach.WorkDay = model.WorkDay;
+                coach.Specialize = specizalize ?? "";
+                UpdateUser(coach.User, model);
+                await UpdateRole(coach.User, model.Role, model.Status);
+            }
+            else
+            {
+                var supervisor = await _context.Supervisors.Include(s => s.User).FirstOrDefaultAsync(s => s.Id == model.Id);
+
+                supervisor.Status = model.Status;
+                supervisor.ShiftTime = model.ShiftTime;
+                supervisor.WorkDay = model.WorkDay;
+                UpdateUser(supervisor.User, model);
+                await UpdateRole(supervisor.User, model.Role, model.Status);
+            }
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction("Employee");
+        }
+
+        [HttpGet]
+        public IActionResult DeleteEmployee(int id, string role)
+        {
+            var em = role?.ToLower() == "coach"
+                    ? _context.Coaches.Include(c => c.User).FirstOrDefault(e => e.Id == id) as dynamic
+                    : _context.Supervisors.Include(s => s.User).FirstOrDefault(e => e.Id == id);
+            if (em == null) return NotFound();
+
+            var model = new EmployeeModel
+            {
+                Id = em.Id,
+                Username = em.User?.UserName ?? "",
+                FirstName = em.User?.FirstName ?? "",
+                LastName = em.User?.LastName ?? "",
+                Email = em.User?.Email ?? "",
+                PhoneNumber = em.User?.PhoneNumber ?? "",
+                BirthDate = em.User?.DateOfBirth,
+                Gender = em.User?.Gender ?? "",
+                Status = em.Status,
+                Role = role ?? "Regular",
+                ShiftTime = em.ShiftTime,
+                WorkDay = em.WorkDay,
+            };
+
+            if (role?.ToLower() == "Coach")
+            {
+                ViewBag.Specialize = em.Specialize;
             }
 
             return View(model);
         }
+        [HttpPost, ActionName("DeleteEmployee")]
+        public async Task<IActionResult> DeleteEmployeeConfirmed(int id, string role)
+        {
+            var em = role?.ToLower() == "coach"
+                    ? _context.Coaches.Include(c => c.User).FirstOrDefault(e => e.Id == id) as dynamic
+                    : _context.Supervisors.Include(s => s.User).FirstOrDefault(e => e.Id == id);
 
+            if (em == null) return NotFound();
+
+            if (role.ToLower() == "coach")
+            {
+                _context.Coaches.Remove(em);
+            }
+            else if (role.ToLower() == "supervisor")
+            {
+                _context.Supervisors.Remove(em);
+            }
+
+            await _context.SaveChangesAsync();
+            return RedirectToAction("Employee");
+        }
+
+        //Create coach or supervisor
+        private object CreateEmployee(EmployeeModel model, string userId)
+        {
+            string? specialize = Request.Form["Specialize"];
+            return model.Role switch
+            {
+                "Coach" => new Coach
+                {
+                    UserId = userId,
+                    Status = model.Status,
+                    Specialize = specialize ?? "Unknown",
+                    ShiftTime = model.ShiftTime,
+                    WorkDay = model.WorkDay
+                },
+
+                "Supervisor" => new Supervisor
+                {
+                    UserId = userId,
+                    Status = model.Status,
+                    ShiftTime = model.ShiftTime,
+                    WorkDay = model.WorkDay
+                },
+
+                _ => throw new ArgumentException("Invalid role")
+            };
+        }
+        //Update coach or supervisor
+        private void UpdateUser(ApplicationUser user, EmployeeModel model)
+        {
+            user.UserName = model.Username;
+            user.FirstName = model.FirstName;
+            user.LastName = model.LastName;
+            user.Email = model.Email;
+            user.PhoneNumber = model.PhoneNumber;
+            user.Gender = model.Gender;
+        }
+        private async Task UpdateRole(ApplicationUser user, string role, string status)
+        {
+            var Role = await _userManager.GetRolesAsync(user);
+            var targetRole = status == "Regular" ? role : $"Senior {role}";
+
+            if (!Role.Contains(targetRole))
+            {
+                foreach (var existingRole in Role)
+                {
+                    await _userManager.RemoveFromRoleAsync(user, existingRole);
+                }
+                await _userManager.AddToRoleAsync(user, targetRole);
+            }
+        }
 
     }
 }
