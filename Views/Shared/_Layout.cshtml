@@ -31,6 +31,12 @@
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Employee" asp-action="Employee">Employee</a>
                             </li>
                         }
+                        @if (User.IsInRole("Admin") || User.IsInRole("Supervisor"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Customer" asp-action="Customer">Customer</a>
+                            </li>
+                        }
                     </ul>
                     <partial name="_LoginPartial" />
                 </div>

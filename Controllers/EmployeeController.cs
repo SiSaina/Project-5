@@ -41,8 +41,7 @@ namespace ExamProjectOne.Controllers
         [HttpPost]
         public async Task<IActionResult> AddEmployee(EmployeeModel model)
         {
-            if (!ModelState.IsValid)
-                return View(model);
+            if (!ModelState.IsValid) return View(model);
 
             var user = new ApplicationUser
             {
@@ -112,6 +111,8 @@ namespace ExamProjectOne.Controllers
         [HttpPost]
         public async Task<IActionResult> EditEmployee(EmployeeModel model)
         {
+            ModelState.Remove("Password");
+            ModelState.Remove("ConfirmPassword");
             if (!ModelState.IsValid)
             {
                 return View(model);
