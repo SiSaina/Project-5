@@ -5,9 +5,8 @@
 <h1 class="text-center">Employee Management</h1>
 
 <div class="container mt-4">
-    <a asp-controller="Employee" asp-action="AddEmployee" class="btn btn-primary">
-        Add Employee
-    </a>
+    <a asp-controller="Employee" asp-action="Create" class="btn btn-primary">Add Employee</a>
+    <a asp-controller="Employee" asp-action="Promote" class="btn btn-primary">Promotion</a>
     <h2>Supervisors</h2>
     <table class="table table-bordered">
         <thead class="table-dark">
@@ -28,25 +27,25 @@
         <tbody>
             @if (Model?.Supervisors != null)
             {
-                foreach (var supervisor in Model.Supervisors)
+                foreach (var sup in Model.Supervisors)
                 {
                     <tr>
-                        <td>@supervisor.Id</td>
-                        <td>@supervisor.User.UserName</td>
-                        <td>@supervisor.User.FirstName</td>
-                        <td>@supervisor.User.LastName</td>
-                        <td>@supervisor.User.Gender</td>
-                        <td>@supervisor.User.Email</td>
-                        <td>@supervisor.User.PhoneNumber</td>
-                        <td>@supervisor.User.DateOfBirth.ToShortDateString()</td>
-                        <td>@supervisor.ShiftTime</td>
-                        <td>@supervisor.WorkDay</td>
+                        <td>@sup.Id</td>
+                        <td>@sup.User.UserName</td>
+                        <td>@sup.User.FirstName</td>
+                        <td>@sup.User.LastName</td>
+                        <td>@sup.User.Gender</td>
+                        <td>@sup.User.Email</td>
+                        <td>@sup.User.PhoneNumber</td>
+                        <td>@sup.User.DateOfBirth.ToShortDateString()</td>
+                        <td>@sup.ShiftTime</td>
+                        <td>@sup.WorkDay</td>
                         <td>
                             <div class="d-flex gap-2">
-                                <a asp-controller="Employee" asp-action="EditEmployee" asp-route-id="@supervisor.Id" asp-route-role="supervisor" class="btn btn-warning btn-sm">
+                                <a asp-controller="Employee" asp-action="Update" asp-route-id="@sup.Id" asp-route-role="supervisor" class="btn btn-warning btn-sm">
                                     Edit
                                 </a>
-                                <a asp-controller="Employee" asp-action="DeleteEmployee" asp-route-id="@supervisor.Id" asp-route-role="supervisor" class="btn btn-danger btn-sm">
+                                <a asp-controller="Employee" asp-action="Delete" asp-route-id="@sup.Id" asp-route-role="supervisor" class="btn btn-danger btn-sm">
                                     Delete
                                 </a>
                             </div>
@@ -78,26 +77,26 @@
         <tbody>
             @if (Model?.Coaches != null)
             {
-                foreach (var coach in Model.Coaches)
+                foreach (var co in Model.Coaches)
                 {
                     <tr>
-                        <td>@coach.Id</td>
-                        <td>@coach.User.UserName</td>
-                        <td>@coach.User.FirstName</td>
-                        <td>@coach.User.LastName</td>
-                        <td>@coach.User.Gender</td>
-                        <td>@coach.User.Email</td>
-                        <td>@coach.User.PhoneNumber</td>
-                        <td>@coach.User.DateOfBirth.ToShortDateString()</td>
-                        <td>@coach.Specialize</td>
-                        <td>@coach.ShiftTime</td>
-                        <td>@coach.WorkDay</td>
+                        <td>@co.Id</td>
+                        <td>@co.User.UserName</td>
+                        <td>@co.User.FirstName</td>
+                        <td>@co.User.LastName</td>
+                        <td>@co.User.Gender</td>
+                        <td>@co.User.Email</td>
+                        <td>@co.User.PhoneNumber</td>
+                        <td>@co.User.DateOfBirth.ToShortDateString()</td>
+                        <td>@co.Specialize</td>
+                        <td>@co.ShiftTime</td>
+                        <td>@co.WorkDay</td>
                         <td>
                             <div class="d-flex gap-2">
-                                <a asp-controller="Employee" asp-action="EditEmployee" asp-route-id="@coach.Id" asp-route-role="coach" class="btn btn-warning btn-sm">
+                                <a asp-controller="Employee" asp-action="Update" asp-route-id="@co.Id" asp-route-role="coach" class="btn btn-warning btn-sm">
                                     Edit
                                 </a>
-                                <a asp-controller="Employee" asp-action="DeleteEmployee" asp-route-id="@coach.Id" asp-route-role="coach" class="btn btn-danger btn-sm">
+                                <a asp-controller="Employee" asp-action="Delete" asp-route-id="@co.Id" asp-route-role="coach" class="btn btn-danger btn-sm">
                                     Delete
                                 </a>
                             </div>

@@ -1,5 +1,4 @@
 using ExamProjectOne.Data;
-using ExamProjectOne.Service;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,13 +15,6 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 builder.Services.AddAuthorization();
 builder.Services.AddControllers();
 builder.Services.AddMvc();
-builder.Services.AddAuthorizationBuilder()
-    .AddPolicy("Admin", policy => policy.RequireRole("Admin"))
-    .AddPolicy("Customer", policy => policy.RequireRole("Customer"))
-    .AddPolicy("Coach", policy => policy.RequireRole("Coach"))
-    .AddPolicy("Supervisor", policy => policy.RequireRole("Supervisor"))
-    .AddPolicy("SeniorCoach", policy => policy.RequireRole("Coach", "Senior coach"))
-    .AddPolicy("SeniorSupervisor", policy => policy.RequireRole("Supervisor", "Senior supervisor"));
 
 builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 {
@@ -58,12 +50,6 @@ app.UseRouting();
 
 //Just add
 app.UseAuthorization();
-using (var scope = app.Services.CreateScope())
-{
-    var serviceProvider = scope.ServiceProvider;
-    await DbInitializer.Initialize(serviceProvider);
-}
-
 
 app.MapControllerRoute(
     name: "default",

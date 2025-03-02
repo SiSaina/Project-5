@@ -9,37 +9,86 @@ using System.Data;
 
 namespace ExamProjectOne.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     public class EmployeeController : Controller
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly ILogger<EmployeeController> _logger;
         private readonly SignInManager<ApplicationUser> _signInManager;
-        public IList<AuthenticationScheme> ExternalLogins { get; set; }
-        public EmployeeController(UserManager<ApplicationUser> userManager, ApplicationDbContext context, ILogger<EmployeeController> logger, SignInManager<ApplicationUser> signInManager)
+        public EmployeeController(UserManager<ApplicationUser> userManager, ApplicationDbContext context, SignInManager<ApplicationUser> signInManager)
         {
             _userManager = userManager;
             _context = context;
-            _logger = logger;
             _signInManager = signInManager;
         }
 
-        public async Task<IActionResult> Employee()
+        public async Task<IActionResult> Read()
         {
             var supervisors = await _context.Supervisors.Include(s => s.User).ToListAsync();
             var coaches = await _context.Coaches.Include(c => c.User).ToListAsync();
 
+            var person = await _context.Users
+                .Include(u => u.Supervisors)
+                .Include(u => u.Coaches)
+                .Include(u => u.Customers)
+                .ToListAsync();
+
+            var employeeList = person.Select(user => new
+            {
+                user.Id,
+                user.UserName,
+                user.FirstName,
+                user.LastName,
+                user.Gender,
+                user.Email,
+                user.PhoneNumber,
+                RoleStats = GetRoleNStatus(user),
+                DateOfBirth = user.DateOfBirth?.ToShortDateString(),
+                Specialize = user.Coaches.FirstOrDefault()?.Specialize ?? "",
+                ShiftTime = user.Supervisors.FirstOrDefault()?.ShiftTime ?? user.Coaches.FirstOrDefault()?.ShiftTime ?? "",
+                WorkDay = user.Supervisors.FirstOrDefault()?.WorkDay ?? user.Coaches.FirstOrDefault()?.WorkDay ?? ""
+            }).ToList();
             return View(new { Supervisors = supervisors, Coaches = coaches });
         }
+        private void GetRoleNStatus(ApplicationUser user)
+        {
+            var result = new List<string>();
+
+            foreach (var supervisor in user.Supervisors)
+            {
+                if (!result.Contains($"Supervisor"))
+                {
+                    string status = supervisor.IsSenior ? "Senior" : "Normal";
+                    result.Add($"Supervisor ({status})");
+                    break;
+                }
+            }
+            foreach (var coach in user.Coaches)
+            {
+                if (!result.Contains($"Coach"))
+                {
+                    string status = coach.IsSenior ? "Senior" : "Normal";
+                    result.Add($"Coach ({status})");
+                    break;
+                }
+            }
+
+            if (user.Customers.Any() && !result.Contains("Customer"))
+            {
+                result.Add("Customer");
+            }
+
+            return result;
+        }
+
 
         [HttpGet]
-        public IActionResult AddEmployee()
+        public IActionResult Create()
         {
             return View();
         }
         [HttpPost]
-        public async Task<IActionResult> AddEmployee(EmployeeModel model)
+        public async Task<IActionResult> Create(EmployeeModel model)
         {
             if (!ModelState.IsValid) return View(model);
 
@@ -77,16 +126,14 @@ namespace ExamProjectOne.Controllers
             await _userManager.AddToRoleAsync(user, role);
 
             await _context.SaveChangesAsync();
-            return RedirectToAction("Employee");
+            return RedirectToAction("Read");
         }
 
-        public IActionResult EditEmployee(int id, string role)
+        public IActionResult Update(int id, string role)
         {
             var em = role?.ToLower() == "coach"
                 ? _context.Coaches.Include(c => c.User).FirstOrDefault(e => e.Id == id) as dynamic
                 : _context.Supervisors.Include(s => s.User).FirstOrDefault(e => e.Id == id);
-
-            if (em == null) return NotFound(); 
 
             var model = new EmployeeModel
             {
@@ -105,11 +152,10 @@ namespace ExamProjectOne.Controllers
                 Specialize = role?.ToLower() == "coach" ? em.Specialize : null,
             };
 
-
             return View(model);
         }
         [HttpPost]
-        public async Task<IActionResult> EditEmployee(EmployeeModel model)
+        public async Task<IActionResult> Update(EmployeeModel model)
         {
             ModelState.Remove("Password");
             ModelState.Remove("ConfirmPassword");
@@ -141,16 +187,15 @@ namespace ExamProjectOne.Controllers
             }
 
             await _context.SaveChangesAsync();
-            return RedirectToAction("Employee");
+            return RedirectToAction("Read");
         }
 
         [HttpGet]
-        public IActionResult DeleteEmployee(int id, string role)
+        public IActionResult Delete(int id, string role)
         {
             var em = role?.ToLower() == "coach"
                     ? _context.Coaches.Include(c => c.User).FirstOrDefault(e => e.Id == id) as dynamic
                     : _context.Supervisors.Include(s => s.User).FirstOrDefault(e => e.Id == id);
-            if (em == null) return NotFound();
 
             var model = new EmployeeModel
             {
@@ -175,8 +220,8 @@ namespace ExamProjectOne.Controllers
 
             return View(model);
         }
-        [HttpPost, ActionName("DeleteEmployee")]
-        public async Task<IActionResult> DeleteEmployeeConfirmed(int id, string role)
+        [HttpPost, ActionName("Delete")]
+        public async Task<IActionResult> DeleteConfirmed(int id, string role)
         {
             var em = role?.ToLower() == "coach"
                     ? _context.Coaches.Include(c => c.User).FirstOrDefault(e => e.Id == id) as dynamic
@@ -194,7 +239,7 @@ namespace ExamProjectOne.Controllers
             }
 
             await _context.SaveChangesAsync();
-            return RedirectToAction("Employee");
+            return RedirectToAction("Read");
         }
 
         //Create coach or supervisor
@@ -224,7 +269,7 @@ namespace ExamProjectOne.Controllers
             };
         }
         //Update coach or supervisor
-        private void UpdateUser(ApplicationUser user, EmployeeModel model)
+        private static void UpdateUser(ApplicationUser user, EmployeeModel model)
         {
             user.UserName = model.Username;
             user.FirstName = model.FirstName;
