@@ -1,4 +1,5 @@
-﻿@{
+﻿
+@{
     ViewData["Title"] = "Employee Page";
 }
 
@@ -19,86 +20,35 @@
                 <th>Email</th>
                 <th>Phone Number</th>
                 <th>Birth Date</th>
+                <th>Role&Status</th>
                 <th>Working Day</th>
                 <th>Shift Time</th>
+                <th>Skill</th>
                 <th></th>
             </tr>
         </thead>
         <tbody>
-            @if (Model?.Supervisors != null)
+            @if (Model != null)
             {
-                foreach (var sup in Model.Supervisors)
+                foreach (var person in Model)
                 {
                     <tr>
-                        <td>@sup.Id</td>
-                        <td>@sup.User.UserName</td>
-                        <td>@sup.User.FirstName</td>
-                        <td>@sup.User.LastName</td>
-                        <td>@sup.User.Gender</td>
-                        <td>@sup.User.Email</td>
-                        <td>@sup.User.PhoneNumber</td>
-                        <td>@sup.User.DateOfBirth.ToShortDateString()</td>
-                        <td>@sup.ShiftTime</td>
-                        <td>@sup.WorkDay</td>
+                        <td>@person.Id</td>
+                        <td>@person.Username</td>
+                        <td>@person.FirstName</td>
+                        <td>@person.LastName</td>
+                        <td>@person.Gender</td>
+                        <td>@person.Email</td>
+                        <td>@person.PhoneNumber</td>
+                        <td>@person.BirthDate</td>
+                        <td>@string.Join(", ", person.RoleStats)</td>
+                        <td>@person.ShiftTime</td>
+                        <td>@person.WorkDay</td>
+                        <td>@person.Skill</td>
                         <td>
                             <div class="d-flex gap-2">
-                                <a asp-controller="Employee" asp-action="Update" asp-route-id="@sup.Id" asp-route-role="supervisor" class="btn btn-warning btn-sm">
-                                    Edit
-                                </a>
-                                <a asp-controller="Employee" asp-action="Delete" asp-route-id="@sup.Id" asp-route-role="supervisor" class="btn btn-danger btn-sm">
-                                    Delete
-                                </a>
-                            </div>
-                        </td>
-                    </tr>
-                }
-            }
-        </tbody>
-    </table>
-
-    <h2>Coaches</h2>
-    <table class="table table-bordered">
-        <thead class="table-dark">
-            <tr>
-                <th>ID</th>
-                <th>Username</th>
-                <th>First Name</th>
-                <th>Last Name</th>
-                <th>Gender</th>
-                <th>Email</th>
-                <th>Phone Number</th>
-                <th>Birth Date</th>
-                <th>Specialize</th>
-                <th>Working Day</th>
-                <th>Shift Time</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @if (Model?.Coaches != null)
-            {
-                foreach (var co in Model.Coaches)
-                {
-                    <tr>
-                        <td>@co.Id</td>
-                        <td>@co.User.UserName</td>
-                        <td>@co.User.FirstName</td>
-                        <td>@co.User.LastName</td>
-                        <td>@co.User.Gender</td>
-                        <td>@co.User.Email</td>
-                        <td>@co.User.PhoneNumber</td>
-                        <td>@co.User.DateOfBirth.ToShortDateString()</td>
-                        <td>@co.Specialize</td>
-                        <td>@co.ShiftTime</td>
-                        <td>@co.WorkDay</td>
-                        <td>
-                            <div class="d-flex gap-2">
-                                <a asp-controller="Employee" asp-action="Update" asp-route-id="@co.Id" asp-route-role="coach" class="btn btn-warning btn-sm">
-                                    Edit
-                                </a>
-                                <a asp-controller="Employee" asp-action="Delete" asp-route-id="@co.Id" asp-route-role="coach" class="btn btn-danger btn-sm">
-                                    Delete
-                                </a>
+                                <a asp-controller="Employee" asp-action="Update" asp-route-id="@person.Id" class="btn btn-warning btn-sm">Update</a>
+                                <a asp-controller="Employee" asp-action="Delete" asp-route-id="@person.Id" class="btn btn-danger btn-sm">Delete</a>
                             </div>
                         </td>
                     </tr>

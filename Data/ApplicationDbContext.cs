@@ -18,19 +18,19 @@ namespace ExamProjectOne.Data
             // one to one: coach -> user
             builder.Entity<Coach>()
                 .HasOne(s => s.User)
-                .WithOne()
+                .WithOne(u => u.Coach)
                 .HasForeignKey<Coach>(s => s.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
             // one to one: customer -> user
             builder.Entity<Customer>()
                 .HasOne(c => c.User)
-                .WithOne()
+                .WithOne(u => u.Customer)
                 .HasForeignKey<Customer>(c => c.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
             // One-to-One: Supervisor -> User
             builder.Entity<Supervisor>()
                 .HasOne(s => s.User)
-                .WithOne()
+                .WithOne(u => u.Supervisor)
                 .HasForeignKey<Supervisor>(s => s.UserId)
                 .OnDelete(DeleteBehavior.Cascade);
 

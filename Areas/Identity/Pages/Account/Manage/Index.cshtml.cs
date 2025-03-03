@@ -78,7 +78,7 @@ namespace ExamProjectOne.Areas.Identity.Pages.Account.Manage
                 FirstName = user.FirstName,
                 LastName = user.LastName,
                 Gender = user.Gender,
-                BirthDate = user.DateOfBirth
+                BirthDate = (DateTime)user.DateOfBirth
             };
         }
 

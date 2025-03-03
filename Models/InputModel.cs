@@ -42,19 +42,20 @@ namespace ExamProjectOne.Models
         [DataType(DataType.Password)]
         [Display(Name = "Confirm Password")]
         [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
-        public string ConfirmPassword { get; set; } = string.Empty;
+        public string? ConfirmPassword { get; set; } = string.Empty;
     }
     [NotMapped]
-    public class EmployeeModel : RegisterModel
+    public class UserModel : RegisterModel
     {
         public int Id { get; set; }
+        public string IdStr { get; set; } = string.Empty;
         [Required]
         public string Role { get; set; } = string.Empty;
-        [Required]
-        public string Status { get; set; } = string.Empty;
-        public string ShiftTime { get; set; }
-        public string WorkDay { get; set; }
-        public string Specialize { get; set; } = string.Empty;
+        public string? Status { get; set; } = string.Empty;
+        public string? ShiftTime { get; set; }
+        public string? WorkDay { get; set; }
+        public string? Skill { get; set; } = string.Empty;
+        public List<string> RoleStats { get; set; } = new List<string>();
     }
 
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using ExamProjectOne.Models;
+using Microsoft.AspNetCore.Identity;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Reflection;
@@ -21,12 +22,12 @@ namespace ExamProjectOne.Data
         public string Gender { get; set; } = "Unknown";
         public string? CoachId { get; set; }
         [ForeignKey("CoachId")]
-        public ApplicationUser? Coach { get; set; }
+        public Coach? Coach { get; set; }
         public string? SupervisorId { get; set; }
         [ForeignKey("SupervisorId")]
-        public ApplicationUser? Supervisor { get; set; }
+        public Supervisor? Supervisor { get; set; }
         public string? CustomerId { get; set; }
         [ForeignKey("CustomerId")]
-        public ApplicationUser? Customer { get; set; }
+        public Customer? Customer { get; set; }
     }
 }

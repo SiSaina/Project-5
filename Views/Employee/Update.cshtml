@@ -1,4 +1,4 @@
-﻿@model ExamProjectOne.Models.EmployeeModel
+﻿@model ExamProjectOne.Models.UserModel
 
 @{
     ViewData["Title"] = "Edit Employee";
@@ -6,110 +6,108 @@
 
 <h2 class="text-center">Edit Employee</h2>
 
-<form asp-controller="Employee" asp-action="EditEmployee" method="post">
+<form asp-controller="Employee" asp-action="Update" method="post">
     <div class="form-floating mb-3 w-100">
         <input asp-for="Id" class="form-control bg-light" readonly />
         <label asp-for="Id"></label>
     </div>
-
 
     <div class="form-floating mb-3">
         <input asp-for="Username" class="form-control" required />
         <label asp-for="Username">Username</label>
         <span asp-validation-for="Username" class="text-danger"></span>
     </div>
-
     <div class="form-floating mb-3">
         <input asp-for="FirstName" class="form-control" required />
-        <label asp-for="FirstName">First Name</label>
+        <label asp-for="FirstName">FirstName</label>
         <span asp-validation-for="FirstName" class="text-danger"></span>
     </div>
-
     <div class="form-floating mb-3">
         <input asp-for="LastName" class="form-control" required />
-        <label asp-for="LastName">Last Name</label>
+        <label asp-for="LastName">LastName</label>
         <span asp-validation-for="LastName" class="text-danger"></span>
     </div>
-
-    <div class="mb-3">
-        <label asp-for="Gender" class="form-label">Gender</label>
-        <select asp-for="Gender" class="form-control">
-            <option value="Male">Male</option>
-            <option value="Female">Female</option>
-        </select>
-    </div>
     <div class="form-floating mb-3">
-        <input asp-for="Email" class="form-control" type="email" required />
+        <input asp-for="Email" class="form-control" required />
         <label asp-for="Email">Email</label>
         <span asp-validation-for="Email" class="text-danger"></span>
     </div>
     <div class="form-floating mb-3">
-        <input asp-for="PhoneNumber" class="form-control" autocomplete="tel" aria-required="true" placeholder="Phone Number" />
+        <input asp-for="PhoneNumber" class="form-control" required />
         <label asp-for="PhoneNumber">Phone Number</label>
         <span asp-validation-for="PhoneNumber" class="text-danger"></span>
     </div>
     <div class="form-floating mb-3">
-        <input asp-for="BirthDate" class="form-control" type="date" required />
+        <input asp-for="BirthDate" type="date" class="form-control" placeholder="Birth Date"/>
         <label asp-for="BirthDate">Birth Date</label>
         <span asp-validation-for="BirthDate" class="text-danger"></span>
     </div>
     <div class="mb-3">
-        <label asp-for="Status" class="form-label">Status</label>
-        <select asp-for="Status" class="form-control">
-            <option value="Regular">Regular</option>
-            <option value="Senior">Senior</option>
+        <label asp-for="Gender" class="form-label">Gender</label>
+        <select asp-for="Gender" class="form-control" required>
+            <option value="">Select a gender</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
         </select>
+        <span asp-validation-for="Gender" class="text-danger"></span>
     </div>
-    <div class="mb-3">
-        <label class="form-label">Shift Time</label>
-        <select asp-for="ShiftTime" class="form-control">
-            <option value="">Select a shift</option>
-            <option value="7:30 AM - 5:00 PM">7:30 AM - 5:00 PM</option>
-            <option value="5:00 PM - 12:00 AM">5:00 PM - 12:00 AM</option>
-        </select>
-    </div>
-    <div class="mb-3">
-        <label class="form-label">Work Days</label>
-        <select asp-for="WorkDay" class="form-control">
-            <option value="">Select work days</option>
-            <option value="Monday - Friday">Monday - Friday</option>
-            <option value="Saturday - Sunday">Saturday - Sunday</option>
-        </select>
-    </div>
+
     <div class="mb-3">
         <label asp-for="Role" class="form-label">Role</label>
-        <select asp-for="Role" class="form-control" id="roleDropdown">
+        <select asp-for="Role" class="form-control" id="roleDropdown" required>
+            <option value="">Select a role</option>
             <option value="Supervisor">Supervisor</option>
             <option value="Coach">Coach</option>
-        </select>
-    </div>
-    <div id="coachFields" class="mb-3" style="display: none;">
-        <label asp-for="Specialize" class="form-label">Specialize</label>
-        <select asp-for="Specialize" class="form-control">
-            <option value="Gym">Gym</option>
-            <option value="Yoga">Yoga</option>
-            <option value="Swimming">Swimming</option>
-            <option value="Dance">Dance</option>
+            <option value="Customer">Customer</option>
         </select>
     </div>
 
-    <div class="text-center">
-        <button type="submit" class="btn btn-primary">Save Changes</button>
-        <a asp-action="Employee" class="btn btn-secondary">Cancel</a>
+    <div id="supervisorField" style="display: none;">
+        <div class="mb-3">
+            <label asp-for="Status" class="form-label">Status</label>
+            <select asp-for="Status" class="form-control" required>
+                <option value="">Select a status</option>
+                <option value="Regular">Regular</option>
+                <option value="Senior">Senior</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label asp-for="Status" class="form-label">Shift Time</label>
+            <select asp-for="ShiftTime" class="form-control" required>
+                <option value="">Select a shift</option>
+                <option value="7:30 AM - 5:00 PM">7:30 AM - 5:00 PM</option>
+                <option value="5:00 PM - 12:00 AM">5:00 PM - 12:00 AM</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label asp-for="WorkDay" class="form-label">Work Days</label>
+            <select asp-for="WorkDay" class="form-control" required>
+                <option value="">Select work days</option>
+                <option value="Monday - Friday">Monday - Friday</option>
+                <option value="Saturday - Sunday">Saturday - Sunday</option>
+            </select>
+        </div>
+        <div id="coachField" style="display: none;">
+            <div class="mb-3">
+                <label class="form-label">Skill</label>
+                <select asp-for="Skill" class="form-control">
+                    <option value="">Select a skill</option>
+                    <option value="Gym">Gym</option>
+                    <option value="Yoga">Yoga</option>
+                    <option value="Swimming">Swimming</option>
+                    <option value="Dance">Dance</option>
+                </select>
+            </div>
+        </div>
     </div>
+
+    <button type="submit" class="btn btn-primary">Submit</button>
 </form>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        var roleDropdown = document.getElementById("roleDropdown");
-        var coachFields = document.getElementById("coachFields");
-
-        function toggleSpecialization() {
-            coachFields.style.display = roleDropdown.value === "Coach" ? "block" : "none";
-        }
-
-        toggleSpecialization();
-        roleDropdown.addEventListener("change", toggleSpecialization);
+    document.getElementById("roleDropdown").addEventListener("change", function () {
+        var role = this.value;
+        document.getElementById("supervisorField").style.display = (role === "Supervisor" || role === "Coach") ? "block" : "none";
+        document.getElementById("coachField").style.display = role === "Coach" ? "block" : "none";
     });
 </script>
-

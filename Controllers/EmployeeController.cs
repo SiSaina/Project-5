@@ -24,62 +24,30 @@ namespace ExamProjectOne.Controllers
 
         public async Task<IActionResult> Read()
         {
-            var supervisors = await _context.Supervisors.Include(s => s.User).ToListAsync();
-            var coaches = await _context.Coaches.Include(c => c.User).ToListAsync();
-
             var person = await _context.Users
-                .Include(u => u.Supervisors)
-                .Include(u => u.Coaches)
-                .Include(u => u.Customers)
+                .Include(u => u.Supervisor)
+                .Include(u => u.Coach)
+                .Include(u => u.Customer)
                 .ToListAsync();
 
-            var employeeList = person.Select(user => new
+            var people = person.Select(user => new UserModel
             {
-                user.Id,
-                user.UserName,
-                user.FirstName,
-                user.LastName,
-                user.Gender,
-                user.Email,
-                user.PhoneNumber,
+                IdStr = user.Id.Substring(0, 3),
+                Username = user.UserName ?? "",
+                FirstName = user.FirstName,
+                LastName = user.LastName,
+                Gender = user.Gender,
+                Email = user.Email ?? "",
+                PhoneNumber = user.PhoneNumber ?? "",
+                BirthDate = user.DateOfBirth.Date,
                 RoleStats = GetRoleNStatus(user),
-                DateOfBirth = user.DateOfBirth?.ToShortDateString(),
-                Specialize = user.Coaches.FirstOrDefault()?.Specialize ?? "",
-                ShiftTime = user.Supervisors.FirstOrDefault()?.ShiftTime ?? user.Coaches.FirstOrDefault()?.ShiftTime ?? "",
-                WorkDay = user.Supervisors.FirstOrDefault()?.WorkDay ?? user.Coaches.FirstOrDefault()?.WorkDay ?? ""
+                ShiftTime = user.Supervisor?.ShiftTime ?? user.Coach?.ShiftTime ?? "",
+                WorkDay = user.Supervisor?.WorkDay ?? user.Coach?.WorkDay ?? "",
+                Skill = user.Coach?.Skill ?? ""
             }).ToList();
-            return View(new { Supervisors = supervisors, Coaches = coaches });
+            return View(people);
         }
-        private void GetRoleNStatus(ApplicationUser user)
-        {
-            var result = new List<string>();
 
-            foreach (var supervisor in user.Supervisors)
-            {
-                if (!result.Contains($"Supervisor"))
-                {
-                    string status = supervisor.IsSenior ? "Senior" : "Normal";
-                    result.Add($"Supervisor ({status})");
-                    break;
-                }
-            }
-            foreach (var coach in user.Coaches)
-            {
-                if (!result.Contains($"Coach"))
-                {
-                    string status = coach.IsSenior ? "Senior" : "Normal";
-                    result.Add($"Coach ({status})");
-                    break;
-                }
-            }
-
-            if (user.Customers.Any() && !result.Contains("Customer"))
-            {
-                result.Add("Customer");
-            }
-
-            return result;
-        }
 
 
         [HttpGet]
@@ -88,7 +56,7 @@ namespace ExamProjectOne.Controllers
             return View();
         }
         [HttpPost]
-        public async Task<IActionResult> Create(EmployeeModel model)
+        public async Task<IActionResult> Create(UserModel model)
         {
             if (!ModelState.IsValid) return View(model);
 
@@ -106,56 +74,34 @@ namespace ExamProjectOne.Controllers
 
             var result = await _userManager.CreateAsync(user, model.Password);
 
-            if (!result.Succeeded)
-            {
-                foreach (var error in result.Errors)
-                    ModelState.AddModelError(string.Empty, error.Description);
-
-                return View(model);
-            }
+            if (!result.Succeeded) return View(model);
 
             //Create employee
-            var employee = CreateEmployee(model, user.Id);
-            if (employee is Coach coach)
-                _context.Coaches.Add(coach);
-            else if (employee is Supervisor supervisor)
-                _context.Supervisors.Add(supervisor);
+            var person = CreateEmployee(model, user.Id);
+            if (person is Coach coach) _context.Coaches.Add(coach);
+            else if (person is Supervisor supervisor) _context.Supervisors.Add(supervisor);
+            else if (person is Customer customer) _context.Customers.Add(customer);
 
             //Role
-            string role = model.Status == "Regular" ? model.Role : $"Senior {model.Role}";
-            await _userManager.AddToRoleAsync(user, role);
+            string status = model.Status == "" ? model.Role : $"Senior {model.Role}";
+            await _userManager.AddToRoleAsync(user, status);
 
             await _context.SaveChangesAsync();
             return RedirectToAction("Read");
         }
 
-        public IActionResult Update(int id, string role)
+        public IActionResult Update(string id)
         {
-            var em = role?.ToLower() == "coach"
-                ? _context.Coaches.Include(c => c.User).FirstOrDefault(e => e.Id == id) as dynamic
-                : _context.Supervisors.Include(s => s.User).FirstOrDefault(e => e.Id == id);
+            var person = _context.Users
+                .Include(u => u.Supervisor)
+                .Include(u => u.Coach)
+                .Include(u => u.Customer)
+                .FirstOrDefault(u => u.Id == id);
 
-            var model = new EmployeeModel
-            {
-                Id = em.Id,
-                Username = em.User?.UserName ?? "", 
-                FirstName = em.User?.FirstName ?? "",
-                LastName = em.User?.LastName ?? "",
-                Email = em.User?.Email ?? "",
-                PhoneNumber = em.User?.PhoneNumber ?? "",
-                BirthDate = em.User?.DateOfBirth,
-                Gender = em.User?.Gender ?? "",
-                Status = em.Status,
-                Role = role ?? "Regular",
-                ShiftTime = em.ShiftTime,
-                WorkDay = em.WorkDay,
-                Specialize = role?.ToLower() == "coach" ? em.Specialize : null,
-            };
-
-            return View(model);
+            return View(person);
         }
         [HttpPost]
-        public async Task<IActionResult> Update(EmployeeModel model)
+        public async Task<IActionResult> Update(UserModel model)
         {
             ModelState.Remove("Password");
             ModelState.Remove("ConfirmPassword");
@@ -165,13 +111,13 @@ namespace ExamProjectOne.Controllers
             }
 
             var coach = await _context.Coaches.Include(c => c.User).FirstOrDefaultAsync(c => c.Id == model.Id);
-            string? specizalize = Request.Form["Specialize"];
+            string? skill = Request.Form["Skill"];
             if (coach != null)
             {
                 coach.Status = model.Status;
                 coach.ShiftTime = model.ShiftTime;
                 coach.WorkDay = model.WorkDay;
-                coach.Specialize = specizalize ?? "";
+                coach.Skill = skill ?? "";
                 UpdateUser(coach.User, model);
                 await UpdateRole(coach.User, model.Role, model.Status);
             }
@@ -197,9 +143,9 @@ namespace ExamProjectOne.Controllers
                     ? _context.Coaches.Include(c => c.User).FirstOrDefault(e => e.Id == id) as dynamic
                     : _context.Supervisors.Include(s => s.User).FirstOrDefault(e => e.Id == id);
 
-            var model = new EmployeeModel
+            var model = new UserModel
             {
-                Id = em.Id,
+/*                Id = em.Id,
                 Username = em.User?.UserName ?? "",
                 FirstName = em.User?.FirstName ?? "",
                 LastName = em.User?.LastName ?? "",
@@ -210,7 +156,7 @@ namespace ExamProjectOne.Controllers
                 Status = em.Status,
                 Role = role ?? "Regular",
                 ShiftTime = em.ShiftTime,
-                WorkDay = em.WorkDay,
+                WorkDay = em.WorkDay,*/
             };
 
             if (role?.ToLower() == "Coach")
@@ -243,33 +189,37 @@ namespace ExamProjectOne.Controllers
         }
 
         //Create coach or supervisor
-        private object CreateEmployee(EmployeeModel model, string userId)
+        private object CreateEmployee(UserModel model, string userId)
         {
-            string? specialize = Request.Form["Specialize"];
             return model.Role switch
             {
                 "Coach" => new Coach
                 {
                     UserId = userId,
-                    Status = model.Status,
-                    Specialize = specialize ?? "Unknown",
-                    ShiftTime = model.ShiftTime,
-                    WorkDay = model.WorkDay
+                    Status = model.Status ?? "",
+                    Skill = model.Skill ?? "Unknown",
+                    ShiftTime = model.ShiftTime ?? "",
+                    WorkDay = model.WorkDay ?? "",
                 },
 
                 "Supervisor" => new Supervisor
                 {
                     UserId = userId,
-                    Status = model.Status,
-                    ShiftTime = model.ShiftTime,
-                    WorkDay = model.WorkDay
+                    Status = model.Status ?? "",
+                    ShiftTime = model.ShiftTime ?? "",
+                    WorkDay = model.WorkDay ?? ""
+                },
+
+                "Customer" => new Customer
+                {
+                    UserId = userId
                 },
 
                 _ => throw new ArgumentException("Invalid role")
             };
         }
         //Update coach or supervisor
-        private static void UpdateUser(ApplicationUser user, EmployeeModel model)
+        private static void UpdateUser(ApplicationUser user, UserModel model)
         {
             user.UserName = model.Username;
             user.FirstName = model.FirstName;
@@ -293,5 +243,29 @@ namespace ExamProjectOne.Controllers
             }
         }
 
+
+        private List<string> GetRoleNStatus(ApplicationUser user)
+        {
+            var result = new List<string>();
+
+            if (user.Supervisor != null)
+            {
+                string status = user.Supervisor.Status == "Senior" ? "Senior" : "";
+                result.Add($"{status} Supervisor");
+            }
+
+            if (user.Coach != null)
+            {
+                string status = user.Coach.Status == "Senior" ? "Senior" : "";
+                result.Add($"{status} Coach");
+            }
+
+            if (user.Customer != null)
+            {
+                result.Add("Customer");
+            }
+
+            return result;
+        }
     }
 }
