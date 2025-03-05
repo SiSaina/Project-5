@@ -56,7 +56,7 @@ namespace ExamProjectOne.Areas.Identity.Pages.Account.Manage
             public string FirstName { get; set; }
             public string LastName { get; set; }
             public string Gender { get; set; }
-            public DateTime BirthDate { get; set; }
+            public DateOnly BirthDate { get; set; }
             public string PassWord { get; set; } = "********";
             /// <summary>
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
@@ -78,7 +78,7 @@ namespace ExamProjectOne.Areas.Identity.Pages.Account.Manage
                 FirstName = user.FirstName,
                 LastName = user.LastName,
                 Gender = user.Gender,
-                BirthDate = (DateTime)user.DateOfBirth
+                BirthDate = user.DateOfBirth
             };
         }
 

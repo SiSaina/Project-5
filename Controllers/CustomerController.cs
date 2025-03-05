@@ -90,7 +90,7 @@ namespace ExamProjectOne.Controllers
                 customer.User.Gender = model.User?.Gender ?? "";
                 customer.User.Email = model.User?.Email;
                 customer.User.PhoneNumber = model.User?.PhoneNumber;
-                customer.User.DateOfBirth = (DateTime)(model.User?.DateOfBirth);
+                customer.User.DateOfBirth = model.User.DateOfBirth;
             }
 
             await _context.SaveChangesAsync();

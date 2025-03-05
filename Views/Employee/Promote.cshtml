@@ -1,5 +1,82 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
-@{
+﻿@{
+    ViewData["Title"] = "Promote employee";
 }
+
+<form method="post" asp-action="PromoteConfirmed" asp-route-id="@Model.IdStr">
+    <div class="mb-3">
+        <label class="form-label">Id</label>
+        <input type="text" class="form-control" value="@Model.IdStr" disabled />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Username</label>
+        <input type="text" class="form-control" value="@Model.Username" disabled />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">First Name</label>
+        <input type="text" class="form-control" value="@Model.FirstName" disabled />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Last Name</label>
+        <input type="text" class="form-control" value="@Model.LastName" disabled />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Gender</label>
+        <input type="text" class="form-control" value="@Model.Gender" disabled />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Roles</label>
+
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="IsCoach" name="IsCoach" value="true" @(Model.IsCoach ? "checked" : "") onchange="toggleStatus('Coach')">
+            <label class="form-check-label">Coach</label>
+        </div>
+        <div id="coachStatus" class="mb-3" style="display: @(Model.IsCoach ? "block" : "none")">
+            <label class="form-label">Coach Status</label>
+            <select class="form-control" name="StatusCoach">
+                <option value="Regular" selected="@(Model.StatusCoach == "Regular" ? "selected" : null)">Regular</option>
+                <option value="Senior" selected="@(Model.StatusCoach == "Senior" ? "selected" : null)">Senior</option>
+            </select>
+        </div>
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="IsSupervisor" name="IsSupervisor" value="true" @(Model.IsSupervisor ? "checked" : "") onchange="toggleStatus('Supervisor')">
+            <label class="form-check-label">Supervisor</label>
+        </div>
+        <div id="supervisorStatus" class="mb-3" style="display: @(Model.IsSupervisor ? "block" : "none")">
+            <label class="form-label">Supervisor Status</label>
+            <select class="form-control" name="StatusSupervisor">
+                <option value="Regular" selected="@(Model.StatusSupervisor == "Regular" ? "selected" : null)">Regular</option>
+                <option value="Senior" selected="@(Model.StatusSupervisor == "Senior" ? "selected" : null)">Senior</option>
+            </select>
+        </div>
+
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" name="IsCustomer" value="true" @(Model.IsCustomer ? "checked" : "")>
+            <label class="form-check-label">Customer</label>
+        </div>
+    </div>
+
+
+    <div class="mb-3">
+        <button type="submit" class="btn btn-danger">Change</button>
+        <a href="@Url.Action("Read", "Employee")" class="btn btn-secondary">Cancel</a>
+    </div>
+</form>
+<script>
+    function toggleStatus(role) {
+        var checkbox = document.getElementById("Is" + role);
+        var statusDiv = document.getElementById(role.toLowerCase() + "Status");
+        statusDiv.style.display = checkbox.checked ? "block" : "none";
+    }
+
+    function validateRoles() {
+        var isCoach = document.getElementById("IsCoach").checked;
+        var isSupervisor = document.getElementById("IsSupervisor").checked;
+        var isCustomer = document.getElementById("IsCustomer").checked;
+
+        if (!isCoach && !isSupervisor && !isCustomer) {
+            alert("At least one role must be selected.");
+            return false;
+        }
+        return true;
+    }
+</script>

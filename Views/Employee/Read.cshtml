@@ -7,7 +7,6 @@
 
 <div class="container mt-4">
     <a asp-controller="Employee" asp-action="Create" class="btn btn-primary">Add Employee</a>
-    <a asp-controller="Employee" asp-action="Promote" class="btn btn-primary">Promotion</a>
     <h2>Supervisors</h2>
     <table class="table table-bordered">
         <thead class="table-dark">
@@ -18,8 +17,8 @@
                 <th>Last Name</th>
                 <th>Gender</th>
                 <th>Email</th>
-                <th>Phone Number</th>
-                <th>Birth Date</th>
+@*                 <th>Phone Number</th>
+                <th>Birth Date</th> *@
                 <th>Role&Status</th>
                 <th>Working Day</th>
                 <th>Shift Time</th>
@@ -33,22 +32,24 @@
                 foreach (var person in Model)
                 {
                     <tr>
-                        <td>@person.Id</td>
+                        <td>@person.IdStr.Substring(0, Math.Min(3, person.IdStr.Length))</td>
+
                         <td>@person.Username</td>
                         <td>@person.FirstName</td>
                         <td>@person.LastName</td>
                         <td>@person.Gender</td>
                         <td>@person.Email</td>
-                        <td>@person.PhoneNumber</td>
-                        <td>@person.BirthDate</td>
+@*                         <td>@person.PhoneNumber</td>
+                        <td>@person.BirthDate</td> *@
                         <td>@string.Join(", ", person.RoleStats)</td>
-                        <td>@person.ShiftTime</td>
-                        <td>@person.WorkDay</td>
+                        <td>@string.Join(", ", person.ShiftTimeList)</td>
+                        <td>@string.Join(", ", person.WorkDayList)</td>
                         <td>@person.Skill</td>
                         <td>
                             <div class="d-flex gap-2">
-                                <a asp-controller="Employee" asp-action="Update" asp-route-id="@person.Id" class="btn btn-warning btn-sm">Update</a>
-                                <a asp-controller="Employee" asp-action="Delete" asp-route-id="@person.Id" class="btn btn-danger btn-sm">Delete</a>
+                                <a asp-controller="Employee" asp-action="Update" asp-route-id="@person.IdStr" class="btn btn-warning btn-sm">Update</a>
+                                <a asp-controller="Employee" asp-action="Delete" asp-route-id="@person.IdStr" class="btn btn-danger btn-sm">Delete</a>
+                                <a asp-controller="Employee" asp-action="Promote" asp-route-id="@person.IdStr" class="btn btn-primary btn-sm">Promote</a>
                             </div>
                         </td>
                     </tr>

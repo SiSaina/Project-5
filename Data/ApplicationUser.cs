@@ -16,7 +16,7 @@ namespace ExamProjectOne.Data
         [MaxLength(100)]
         public string LastName { get; set; } = string.Empty;
         [Required]
-        public DateTime DateOfBirth { get; set; } = new DateTime(1111, 1, 1);
+        public DateOnly DateOfBirth { get; set; } = new DateOnly(1111, 1, 1);
 
         [Required]
         public string Gender { get; set; } = "Unknown";

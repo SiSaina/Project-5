@@ -30,13 +30,13 @@ namespace ExamProjectOne.Models
         public string LastName { get; set; } = string.Empty;
 
         [Required]
-        public DateTime BirthDate { get; set; }
+        public DateOnly BirthDate { get; set; }
 
         [Required]
         public string Gender { get; set; } = string.Empty;
 
         [Required]
-        public string PhoneNumber { get; set; } = string.Empty; // Changed from int to string
+        public string PhoneNumber { get; set; } = string.Empty;
 
         [Required]
         [DataType(DataType.Password)]
@@ -48,14 +48,29 @@ namespace ExamProjectOne.Models
     public class UserModel : RegisterModel
     {
         public int Id { get; set; }
-        public string IdStr { get; set; } = string.Empty;
+        public string? IdStr { get; set; } = string.Empty;
         [Required]
         public string Role { get; set; } = string.Empty;
         public string? Status { get; set; } = string.Empty;
         public string? ShiftTime { get; set; }
         public string? WorkDay { get; set; }
         public string? Skill { get; set; } = string.Empty;
-        public List<string> RoleStats { get; set; } = new List<string>();
+
+        public List<string>? RoleStats { get; set; } = [];
+        public List<string>? RoleList { get; set; } = [];
+        public List<string>? ShiftTimeList { get; set; } = [];
+        public List<string>? WorkDayList { get; set; } = [];
+
+        public string? StatusCoach { get; set; } = string.Empty;
+        public string? StatusSupervisor { get; set; } = string.Empty;
+        public string? ShiftTimeCoach { get; set; } = string.Empty;
+        public string? ShiftTimeSupervisor{ get; set; } = string.Empty;
+        public string? WorkDayCoach { get; set; } = string.Empty;
+        public string? WorkDaySupervisor { get; set; } = string.Empty;
+
+        public bool? IsCoach { get; set; } = false;
+        public bool? IsSupervisor { get; set; } = false;
+        public bool? IsCustomer { get; set; } = false;
     }
 
 }

@@ -8,10 +8,10 @@
     <strong>Warning!</strong> Are you sure you want to delete this employee? This action cannot be undone.
 </div>
 
-<form method="post" asp-action="DeleteEmployeeConfirmed" asp-route-id="@Model.Id" asp-route-role="@Model.Role">
+<form method="post" asp-action="DeleteConfirmed" asp-route-id="@Model.IdStr">
     <div class="mb-3">
         <label class="form-label">Id</label>
-        <input type="text" class="form-control" value="@Model.Id" disabled />
+        <input type="text" class="form-control" value="@Model.IdStr" disabled />
     </div>
     <div class="mb-3">
         <label class="form-label">Username</label>
@@ -38,34 +38,16 @@
         <input type="text" class="form-control" value="@Model.PhoneNumber" disabled />
     </div>
     <div class="mb-3">
-        <label class="form-label">Birth day</label>
-        <input type="text" class="form-control" value="@Model.BirthDate" disabled />
+        <label class="form-label">Roles and Status</label>
+        <ul>
+            @foreach (var roleStat in Model.RoleStats)
+            {
+                <li>@roleStat</li>
+            }
+        </ul>
     </div>
-    <div class="mb-3">
-        <label class="form-label">Status</label>
-        <input type="text" class="form-control" value="@Model.Status" disabled />
-    </div>
-    <div class="mb-3">
-        <label class="form-label">Role</label>
-        <input type="text" class="form-control" value="@Model.Role" disabled />
-    </div>
-    <div class="mb-3">
-        <label class="form-label">Shift Time</label>
-        <input type="text" class="form-control" value="@Model.ShiftTime" disabled />
-    </div>
-    <div class="mb-3">
-        <label class="form-label">Work Days</label>
-        <input type="text" class="form-control" value="@Model.WorkDay" disabled />
-    </div>
-    @if (Model.Role?.ToLower() == "coach")
-    {
-        <div class="mb-3">
-            <label class="form-label">Specialize</label>
-            <input type="text" class="form-control" value="@ViewBag.Specialize" disabled />
-        </div>
-    }
     <div class="mb-3">
         <button type="submit" class="btn btn-danger">Delete</button>
-        <a href="@Url.Action("Employee", "Employee")" class="btn btn-secondary">Cancel</a>
+        <a href="@Url.Action("Read", "Employee")" class="btn btn-secondary">Cancel</a>
     </div>
 </form>

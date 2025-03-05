@@ -9,7 +9,7 @@ namespace ExamProjectOne.Models
         [Key]
         public int Id { get; set; }
         [Required]
-        public string UserId { get; set; } = string.Empty;
+        public string UserId { get; set; }
         [Required]
         public string Status { get; set; } = string.Empty;
         [Required]

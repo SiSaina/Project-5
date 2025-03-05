@@ -8,8 +8,8 @@
 
 <form asp-controller="Employee" asp-action="Update" method="post">
     <div class="form-floating mb-3 w-100">
-        <input asp-for="Id" class="form-control bg-light" readonly />
-        <label asp-for="Id"></label>
+        <input asp-for="IdStr" class="form-control bg-light" readonly />
+        <label asp-for="IdStr"></label>
     </div>
 
     <div class="form-floating mb-3">
@@ -56,24 +56,21 @@
         <label asp-for="Role" class="form-label">Role</label>
         <select asp-for="Role" class="form-control" id="roleDropdown" required>
             <option value="">Select a role</option>
-            <option value="Supervisor">Supervisor</option>
-            <option value="Coach">Coach</option>
-            <option value="Customer">Customer</option>
+            @foreach (var role in Model?.RoleList)
+            {
+                <option value="@role">@role</option>
+            }
         </select>
     </div>
 
     <div id="supervisorField" style="display: none;">
         <div class="mb-3">
             <label asp-for="Status" class="form-label">Status</label>
-            <select asp-for="Status" class="form-control" required>
-                <option value="">Select a status</option>
-                <option value="Regular">Regular</option>
-                <option value="Senior">Senior</option>
-            </select>
+            <input type="text" asp-for="Status" class="form-control" id="statusField" readonly />
         </div>
         <div class="mb-3">
             <label asp-for="Status" class="form-label">Shift Time</label>
-            <select asp-for="ShiftTime" class="form-control" required>
+            <select id="shiftTimeField" asp-for="ShiftTime" class="form-control" required>
                 <option value="">Select a shift</option>
                 <option value="7:30 AM - 5:00 PM">7:30 AM - 5:00 PM</option>
                 <option value="5:00 PM - 12:00 AM">5:00 PM - 12:00 AM</option>
@@ -81,7 +78,7 @@
         </div>
         <div class="mb-3">
             <label asp-for="WorkDay" class="form-label">Work Days</label>
-            <select asp-for="WorkDay" class="form-control" required>
+            <select id="workDayField" asp-for="WorkDay" class="form-control" required>
                 <option value="">Select work days</option>
                 <option value="Monday - Friday">Monday - Friday</option>
                 <option value="Saturday - Sunday">Saturday - Sunday</option>
@@ -100,14 +97,47 @@
             </div>
         </div>
     </div>
-
-    <button type="submit" class="btn btn-primary">Submit</button>
+    <button type="submit" name="action" value="Coach" class="btn btn-primary">Update Coach</button>
+    <button type="submit" name="action" value="Supervisor" class="btn btn-primary">Update Supervisor</button>
+    <button type="submit" class="btn btn-primary">Update User</button>
+    <a href="@Url.Action("Read", "Employee")" class="btn btn-secondary">Cancel</a>
 </form>
 
 <script>
-    document.getElementById("roleDropdown").addEventListener("change", function () {
-        var role = this.value;
-        document.getElementById("supervisorField").style.display = (role === "Supervisor" || role === "Coach") ? "block" : "none";
-        document.getElementById("coachField").style.display = role === "Coach" ? "block" : "none";
+    document.addEventListener("DOMContentLoaded", function () {
+        var roleDropdown = document.getElementById("roleDropdown");
+
+        var supervisorField = document.getElementById("supervisorField");
+        var coachField = document.getElementById("coachField");
+
+        var statusField = document.getElementById("statusField");
+        var shiftTimeField = document.getElementById("shiftTimeField");
+        var workDayField = document.getElementById("workDayField");
+
+        function toggleFieldsBasedOnRole() {
+            var role = roleDropdown.options[roleDropdown.selectedIndex].value;
+
+            supervisorField.style.display = (role === "Supervisor" || role === "Coach") ? "block" : "none";
+            coachField.style.display = role === "Coach" ? "block" : "none";
+
+            if (role === "Coach") {
+                updateSupervisorBtn.disabled = true;
+            } else {
+                updateSupervisorBtn.disabled = false;
+            }
+
+            if (role === "Coach") {
+                statusField.value = "@Model.StatusCoach";
+                shiftTimeField.value = "@Model.ShiftTimeCoach";
+                workDayField.value = "@Model.WorkDayCoach";
+            }
+            if (role === "Supervisor") {
+                statusField.value = "@Model.StatusSupervisor";
+                shiftTimeField.value = "@Model.ShiftTimeSupervisor";
+                workDayField.value = "@Model.WorkDaySupervisor";
+            }
+        }
+        roleDropdown.addEventListener("change", toggleFieldsBasedOnRole);
+        toggleFieldsBasedOnRole();
     });
 </script>
