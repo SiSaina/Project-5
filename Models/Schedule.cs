@@ -12,14 +12,13 @@ namespace ExamProjectOne.Models
         [Required]
         public int GymHallId { get; set; }
         [Required]
+        public string Title { get; set; } = string.Empty;
+        [Required]
         public TimeOnly StartTime { get; set; }
         [Required]
         public TimeOnly EndTime { get; set; }
         [Required]
         public DateTime Date { get; set; }
-        //For group or individual
-        [Required]
-        public bool GroupSession { get; set; }
         [ForeignKey("CoachId")]
         public Coach Coach { get; set; }
         [ForeignKey("GymHallId")]

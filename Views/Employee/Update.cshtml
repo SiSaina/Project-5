@@ -69,7 +69,7 @@
             <input type="text" asp-for="Status" class="form-control" id="statusField" readonly />
         </div>
         <div class="mb-3">
-            <label asp-for="Status" class="form-label">Shift Time</label>
+            <label asp-for="ShiftTime" class="form-label">Shift Time</label>
             <select id="shiftTimeField" asp-for="ShiftTime" class="form-control" required>
                 <option value="">Select a shift</option>
                 <option value="7:30 AM - 5:00 PM">7:30 AM - 5:00 PM</option>
@@ -121,20 +121,16 @@
             coachField.style.display = role === "Coach" ? "block" : "none";
 
             if (role === "Coach") {
-                updateSupervisorBtn.disabled = true;
-            } else {
-                updateSupervisorBtn.disabled = false;
-            }
-
-            if (role === "Coach") {
                 statusField.value = "@Model.StatusCoach";
                 shiftTimeField.value = "@Model.ShiftTimeCoach";
                 workDayField.value = "@Model.WorkDayCoach";
+                updateSupervisorBtn.disabled = true;
             }
             if (role === "Supervisor") {
                 statusField.value = "@Model.StatusSupervisor";
                 shiftTimeField.value = "@Model.ShiftTimeSupervisor";
                 workDayField.value = "@Model.WorkDaySupervisor";
+                updateSupervisorBtn.disabled = false;
             }
         }
         roleDropdown.addEventListener("change", toggleFieldsBasedOnRole);

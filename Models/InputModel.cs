@@ -72,5 +72,41 @@ namespace ExamProjectOne.Models
         public bool? IsSupervisor { get; set; } = false;
         public bool? IsCustomer { get; set; } = false;
     }
+    [NotMapped]
+    public class ScheduleModel
+    {
+        [Required]
+        public int Id { get; set; }
+        [Required]
+        public string Title { get; set; } = string.Empty;
+        [Required]
+        public TimeOnly StartTime { get; set; }
+        [Required]
+        public TimeOnly EndTime { get; set; }
+        [Required]
+        public DateTime Date { get; set; }
+        [Required]
+        public bool GroupSession { get; set; }
+        [Required]
+        public int Capacity { get; set; }
+
+        public List<Customer>? Customers { get; set; }
+        public List<Coach>? Coaches { get; set; } = [];
+        public List<GymHall>? GymHalls { get; set; } = [];
+
+        public List<int>? CustomerId { get; set; }
+        public Coach? Coach { get; set; }
+        public GymHall? GymHall { get; set; }
+
+        public int CoachId { get; set; }
+        public int GymHallId { get; set; }
+
+        public List<int?> SelectCustomer { get; set; }
+
+        public string CoachName { get; set; }
+        public string GymHallName { get; set; }
+
+        public string Action { get; set; }
+    }
 
 }

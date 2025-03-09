@@ -1,0 +1,62 @@
+﻿@model ExamProjectOne.Models.ScheduleModel
+@{
+    ViewData["Title"] = "Update schedule";
+}
+
+<form method="post" asp-action="Update">
+    <input asp-for="Id" hidden/>
+    <div class="mb-3">
+        <label class="form-label">Title</label>
+        <input type="text" class="form-control" asp-for="Title" required />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Start Time</label>
+        <input type="time" class="form-control" asp-for="StartTime" required />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">End Time</label>
+        <input type="time" class="form-control" asp-for="EndTime" required />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Date</label>
+        <input type="date" class="form-control" asp-for="Date" required />
+    </div>
+
+
+    <div class="mb-3 form-check">
+        <input type="checkbox" class="form-check-input" asp-for="GroupSession" id="groupSession" />
+        <label class="form-check-label" for="groupSession">Group Session</label>
+    </div>
+    <div class="mb-3" style="display:none;" id="capacityField">
+        <label class="form-label">Capacity</label>
+        <input type="number" class="form-control" asp-for="Capacity" id="capacity" required min="1" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Select coach</label>
+        <select class="form-control" asp-for="CoachId" name="CoachId" required>
+            <option value="">Select a Coach</option>
+            @foreach (var coach in Model.Coaches)
+            {
+                <option value="@coach.Id">@coach.User.UserName</option>
+            }
+        </select>
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Select gym hall</label>
+        <select class="form-control" asp-for="GymHallId" name="GymHallId" required>
+            <option value="">Select a gym hall</option>
+            @foreach (var gym in Model.GymHalls)
+            {
+                <option value="@gym.Id">@gym.Name</option>
+            }
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <button type="submit" class="btn btn-primary">Create schedule</button>
+    </div>
+</form>

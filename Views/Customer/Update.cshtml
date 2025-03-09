@@ -6,7 +6,7 @@
 
 <h2>Add Customer</h2>
 
-<form asp-action="AddCustomer" method="post">
+<form asp-action="Update" method="post">
     <div class="mb-3">
         <label asp-for="User.UserName" class="form-label">Username</label>
         <input asp-for="User.UserName" class="form-control" required />
@@ -48,6 +48,6 @@
 
     <div class="mb-3">
         <button type="submit" class="btn btn-success">Save change</button>
-        <a asp-action="Customer" class="btn btn-secondary">Cancel</a>
+        <a asp-action="Read" class="btn btn-secondary">Cancel</a>
     </div>
 </form>

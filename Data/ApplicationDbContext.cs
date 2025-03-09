@@ -34,9 +34,9 @@ namespace ExamProjectOne.Data
 
             // Many to one: appointment -> coach
             builder.Entity<Appointment>()
-                .HasOne(a => a.Coach)
+                .HasOne(a => a.Schedule)
                 .WithMany()
-                .HasForeignKey(a => a.CoachId)
+                .HasForeignKey(a => a.ScheduleId)
                 .OnDelete(DeleteBehavior.Cascade);
             // Many to one: appointment -> customer
             builder.Entity<Appointment>()
@@ -45,32 +45,34 @@ namespace ExamProjectOne.Data
                 .HasForeignKey(a => a.CustomerId)
                 .OnDelete(DeleteBehavior.NoAction);
             // Many to one: appointment -> gymhall
-            builder.Entity<Appointment>()
-                .HasOne(a => a.GymHall)
-                .WithMany()
-                .HasForeignKey(a => a.GymHallId)
-                .OnDelete(DeleteBehavior.SetNull);
 
 
-            // one to many: group training -> customer
-            builder.Entity<GroupTraining>()
-                .HasOne(gt => gt.Customer)
-                .WithMany()
-                .HasForeignKey(gt => gt.CustomerId)
-                .OnDelete(DeleteBehavior.SetNull);
             // one to one: group training -> schedule
             builder.Entity<GroupTraining>()
                 .HasOne(gt => gt.Schedule)
                 .WithOne()
                 .HasForeignKey<GroupTraining>(gt => gt.ScheduleId)
                 .OnDelete(DeleteBehavior.SetNull);
+            // many to many: group training customer -> group training
+            builder.Entity<GroupTrainingCustomer>()
+                .HasOne(gtc => gtc.GroupTraining)
+                .WithMany(gt => gt.GroupTrainingCustomers)
+                .HasForeignKey(gtc => gtc.GroupTrainingId)
+                .OnDelete(DeleteBehavior.Cascade);
+            // many to many: group training customer -> customer
+            builder.Entity<GroupTrainingCustomer>()
+                .HasOne(gtc => gtc.Customer)
+                .WithMany(c => c.GroupTrainingCustomers)
+                .HasForeignKey(gtc => gtc.CustomerId)
+                .OnDelete(DeleteBehavior.SetNull);
+
 
 
             // one to one: schedule -> coach
             builder.Entity<Schedule>()
                 .HasOne(s => s.Coach)
-                .WithOne()
-                .HasForeignKey<Schedule>(s => s.CoachId)
+                .WithMany(c => c.Schedules)
+                .HasForeignKey(s => s.CoachId)
                 .OnDelete(DeleteBehavior.Cascade);
             // one to one: schedule -> gym hall
             builder.Entity<Schedule>()
@@ -86,5 +88,6 @@ namespace ExamProjectOne.Data
         public DbSet<Schedule> Schedules { get; set; }
         public DbSet<Appointment> Appointments { get; set; }
         public DbSet<GroupTraining> GroupTrainings { get; set; }
+        public DbSet<GroupTrainingCustomer> GroupTrainingCustomers { get; set; }
     }
 }

@@ -18,6 +18,8 @@ namespace ExamProjectOne.Models
         public string ShiftTime { get; set; } = string.Empty;
         [Required]
         public string WorkDay { get; set; } = string.Empty;
+        [Required]
+        public List<Schedule> Schedules { get; set; } = [];
         [ForeignKey("UserId")]
         public ApplicationUser User { get; set; }
     }

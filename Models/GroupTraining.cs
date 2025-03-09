@@ -10,12 +10,10 @@ namespace ExamProjectOne.Models
         [Required]
         public int? ScheduleId { get; set; }
         [Required]
-        public int? CustomerId { get; set; }
-        [Required]
         public int Capacity { get; set; }
         [ForeignKey("ScheduleId")]
         public Schedule? Schedule { get; set; }
-        [ForeignKey("CustomerId")]
-        public Customer? Customer { get; set; }
+        [Required]
+        public List<GroupTrainingCustomer> GroupTrainingCustomers { get; set; } = [];
     }
 }

@@ -5,7 +5,7 @@
 <h1 class="text-center">Customer Management</h1>
 
 <div class="container mt-4">
-    <a asp-controller="Customer" asp-action="AddCustomer" class="btn btn-primary">
+    <a asp-controller="Customer" asp-action="Create" class="btn btn-primary">
         Add Customer
     </a>
     <h2>Customer</h2>
@@ -39,12 +39,8 @@
                         <td>@customer.User.DateOfBirth.ToShortDateString()</td>
                         <td>
                             <div class="d-flex gap-2">
-                                <a asp-controller="Customer" asp-action="EditCustomer" asp-route-id="@customer.Id" class="btn btn-warning btn-sm">
-                                    Edit
-                                </a>
-                                <a asp-controller="Customer" asp-action="DeleteCustomer" asp-route-id="@customer.Id" class="btn btn-danger btn-sm">
-                                    Delete
-                                </a>
+                                <a asp-controller="Customer" asp-action="Update" asp-route-id="@customer.Id" class="btn btn-warning btn-sm"> Update </a>
+                                <a asp-controller="Customer" asp-action="Delete" asp-route-id="@customer.Id" class="btn btn-danger btn-sm"> Delete </a>
                             </div>
                         </td>
                     </tr>

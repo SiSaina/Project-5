@@ -1,30 +1,34 @@
 ﻿@model ExamProjectOne.Models.Customer
 
 @{
-    ViewData["Title"] = "Add Customer";
+    ViewData["Title"] = "Delete Customer";
 }
 
-<h2>Add Customer</h2>
+<h2>Delete Customer</h2>
 
-<form asp-action="AddCustomer" method="post">
+<form asp-action="DeleteConfirmed" method="post">
+    <div class="mb-3">
+        <label class="form-label">Id</label>
+        <input asp-for="Id" class="form-control" readonly/>
+    </div>
     <div class="mb-3">
         <label asp-for="User.UserName" class="form-label">Username</label>
-        <input asp-for="User.UserName" class="form-control" required />
+        <input asp-for="User.UserName" class="form-control" readonly />
         <span asp-validation-for="User.UserName" class="text-danger"></span>
     </div>
     <div class="mb-3">
         <label asp-for="User.FirstName" class="form-label">First name</label>
-        <input asp-for="User.FirstName" class="form-control" required />
+        <input asp-for="User.FirstName" class="form-control" readonly />
         <span asp-validation-for="User.FirstName" class="text-danger"></span>
     </div>
     <div class="mb-3">
         <label asp-for="User.LastName" class="form-label">Last name</label>
-        <input asp-for="User.LastName" class="form-control" required />
+        <input asp-for="User.LastName" class="form-control" readonly />
         <span asp-validation-for="User.LastName" class="text-danger"></span>
     </div>
     <div class="mb-3">
         <label asp-for="User.Gender" class="form-label">Gender</label>
-        <select asp-for="User.Gender" class="form-control">
+        <select asp-for="User.Gender" class="form-control" readonly>
             <option value="Male">Male</option>
             <option value="Female">Female</option>
         </select>
@@ -32,28 +36,22 @@
     </div>
     <div class="mb-3">
         <label asp-for="User.Email" class="form-label">Email</label>
-        <input asp-for="User.Email" type="email" class="form-control" required />
+        <input asp-for="User.Email" type="email" class="form-control" readonly />
         <span asp-validation-for="User.Email" class="text-danger"></span>
     </div>
     <div class="mb-3">
         <label asp-for="User.PhoneNumber" class="form-label">Phone Number</label>
-        <input asp-for="User.PhoneNumber" class="form-control" required />
+        <input asp-for="User.PhoneNumber" class="form-control" readonly />
         <span asp-validation-for="User.PhoneNumber" class="text-danger"></span>
     </div>
     <div class="mb-3">
         <label asp-for="User.DateOfBirth" class="form-label">Date of birth</label>
-        <input asp-for="User.DateOfBirth" type="date" class="form-control" required />
+        <input asp-for="User.DateOfBirth" type="date" class="form-control" readonly />
         <span asp-validation-for="User.DateOfBirth" class="text-danger"></span>
     </div>
 
-    <div class="form-floating mb-3">
-        <input asp-for="User.PasswordHash" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
-        <label asp-for="User.PasswordHash">Password</label>
-        <span asp-validation-for="User.PasswordHash" class="text-danger"></span>
-    </div>
-
     <div class="mb-3">
-        <button type="submit" class="btn btn-success">Add Customer</button>
-        <a asp-action="Customer" class="btn btn-secondary">Cancel</a>
+        <button type="submit" class="btn btn-success">Delete</button>
+        <a asp-action="Read" class="btn btn-secondary">Cancel</a>
     </div>
 </form>

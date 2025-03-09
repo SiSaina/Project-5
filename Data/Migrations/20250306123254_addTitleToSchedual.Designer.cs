@@ -4,6 +4,7 @@ using ExamProjectOne.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ExamProjectOne.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250306123254_addTitleToSchedual")]
+    partial class addTitleToSchedual
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -121,17 +124,35 @@ namespace ExamProjectOne.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("CoachId")
+                        .HasColumnType("int");
+
                     b.Property<int>("CustomerId")
                         .HasColumnType("int");
 
-                    b.Property<int>("ScheduleId")
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<TimeOnly>("EndTime")
+                        .HasColumnType("time");
+
+                    b.Property<int>("GymHallId")
                         .HasColumnType("int");
+
+                    b.Property<TimeOnly>("StartTime")
+                        .HasColumnType("time");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CoachId");
+
                     b.HasIndex("CustomerId");
 
-                    b.HasIndex("ScheduleId");
+                    b.HasIndex("GymHallId");
 
                     b.ToTable("Appointments");
                 });
@@ -203,38 +224,20 @@ namespace ExamProjectOne.Data.Migrations
                     b.Property<int>("Capacity")
                         .HasColumnType("int");
 
-                    b.Property<int>("ScheduleId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ScheduleId")
-                        .IsUnique();
-
-                    b.ToTable("GroupTrainings");
-                });
-
-            modelBuilder.Entity("ExamProjectOne.Models.GroupTrainingCustomer", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
                     b.Property<int>("CustomerId")
                         .HasColumnType("int");
 
-                    b.Property<int>("GroupTrainingId")
+                    b.Property<int>("ScheduleId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CustomerId");
 
-                    b.HasIndex("GroupTrainingId");
+                    b.HasIndex("ScheduleId")
+                        .IsUnique();
 
-                    b.ToTable("GroupTrainingCustomers");
+                    b.ToTable("GroupTrainings");
                 });
 
             modelBuilder.Entity("ExamProjectOne.Models.GymHall", b =>
@@ -274,6 +277,9 @@ namespace ExamProjectOne.Data.Migrations
                     b.Property<TimeOnly>("EndTime")
                         .HasColumnType("time");
 
+                    b.Property<bool>("GroupSession")
+                        .HasColumnType("bit");
+
                     b.Property<int>("GymHallId")
                         .HasColumnType("int");
 
@@ -286,7 +292,8 @@ namespace ExamProjectOne.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CoachId");
+                    b.HasIndex("CoachId")
+                        .IsUnique();
 
                     b.HasIndex("GymHallId");
 
@@ -460,21 +467,29 @@ namespace ExamProjectOne.Data.Migrations
 
             modelBuilder.Entity("ExamProjectOne.Models.Appointment", b =>
                 {
+                    b.HasOne("ExamProjectOne.Models.Coach", "Coach")
+                        .WithMany()
+                        .HasForeignKey("CoachId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("ExamProjectOne.Models.Customer", "Customer")
                         .WithMany()
                         .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("ExamProjectOne.Models.Schedule", "Schedule")
+                    b.HasOne("ExamProjectOne.Models.GymHall", "GymHall")
                         .WithMany()
-                        .HasForeignKey("ScheduleId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasForeignKey("GymHallId")
+                        .OnDelete(DeleteBehavior.SetNull)
                         .IsRequired();
+
+                    b.Navigation("Coach");
 
                     b.Navigation("Customer");
 
-                    b.Navigation("Schedule");
+                    b.Navigation("GymHall");
                 });
 
             modelBuilder.Entity("ExamProjectOne.Models.Coach", b =>
@@ -501,39 +516,28 @@ namespace ExamProjectOne.Data.Migrations
 
             modelBuilder.Entity("ExamProjectOne.Models.GroupTraining", b =>
                 {
+                    b.HasOne("ExamProjectOne.Models.Customer", "Customer")
+                        .WithMany()
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .IsRequired();
+
                     b.HasOne("ExamProjectOne.Models.Schedule", "Schedule")
                         .WithOne()
                         .HasForeignKey("ExamProjectOne.Models.GroupTraining", "ScheduleId")
                         .OnDelete(DeleteBehavior.SetNull)
                         .IsRequired();
 
-                    b.Navigation("Schedule");
-                });
-
-            modelBuilder.Entity("ExamProjectOne.Models.GroupTrainingCustomer", b =>
-                {
-                    b.HasOne("ExamProjectOne.Models.Customer", "Customer")
-                        .WithMany("GroupTrainingCustomers")
-                        .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.SetNull)
-                        .IsRequired();
-
-                    b.HasOne("ExamProjectOne.Models.GroupTraining", "GroupTraining")
-                        .WithMany("GroupTrainingCustomers")
-                        .HasForeignKey("GroupTrainingId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Customer");
 
-                    b.Navigation("GroupTraining");
+                    b.Navigation("Schedule");
                 });
 
             modelBuilder.Entity("ExamProjectOne.Models.Schedule", b =>
                 {
                     b.HasOne("ExamProjectOne.Models.Coach", "Coach")
-                        .WithMany("Schedules")
-                        .HasForeignKey("CoachId")
+                        .WithOne()
+                        .HasForeignKey("ExamProjectOne.Models.Schedule", "CoachId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -617,21 +621,6 @@ namespace ExamProjectOne.Data.Migrations
                     b.Navigation("Customer");
 
                     b.Navigation("Supervisor");
-                });
-
-            modelBuilder.Entity("ExamProjectOne.Models.Coach", b =>
-                {
-                    b.Navigation("Schedules");
-                });
-
-            modelBuilder.Entity("ExamProjectOne.Models.Customer", b =>
-                {
-                    b.Navigation("GroupTrainingCustomers");
-                });
-
-            modelBuilder.Entity("ExamProjectOne.Models.GroupTraining", b =>
-                {
-                    b.Navigation("GroupTrainingCustomers");
                 });
 #pragma warning restore 612, 618
         }

@@ -1,0 +1,40 @@
+﻿@{
+    ViewData["Title"] = "Select customer";
+}
+
+<form method="post" asp-action="SelectOrUpdate">
+    <input type="hidden" name="groupTrainingId" value="@Model.Id" />
+    <input type="hidden" name="Capacity" value="@Model.Capacity" />
+    <input type="hidden" name="Action" value="@Model.Action" />
+    <div class="mb-3">
+        <table class="table table-bordered">
+            <thead class="table-dark">
+                <tr>
+                    <th>ID</th>
+                    <th>Username</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Customers != null)
+                {
+                    foreach (var c in Model.Customers)
+                    {
+                        <tr>
+                            <td>@c.Id</td>
+                            <td>@c.User.UserName</td>
+                            <td>
+                                <input type="checkbox" name="selectCustomer" value="@c.Id"
+                                @(Model.SelectCustomer.Contains(c.Id) ? "checked" : "") />
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div class="mb-3">
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </div>
+</form>

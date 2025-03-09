@@ -1,0 +1,48 @@
+﻿@{
+    ViewData["Title"] = "Gym hall";
+}
+
+<h1 class="text-center">Gym hall Management</h1>
+
+<div class="container mt-4">
+    <a asp-controller="GymHall" asp-action="Upsert" class="btn btn-primary"> Add Gym hall </a>
+    <h2>Gym hall</h2>
+    <table class="table table-bordered">
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Capacity</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model.GymHall != null)
+            {
+                foreach (var gm in Model.GymHall)
+                {
+                    <tr>
+                        <td>@gm.Id</td>
+                        <td>@gm.Name</td>
+                        <td>@gm.Capacity</td>
+                        <td>
+                            <div class="d-flex gap-2">
+                                <a asp-controller="GymHall" asp-action="Upsert" asp-route-id="@gm.Id" class="btn btn-warning btn-sm"> Update </a>
+                                <form asp-controller="GymHall" asp-action="Delete" method="post" class="d-inline-block" onsubmit="return confirmDelete()">
+                                    <input type="hidden" name="id" value="@gm.Id" />
+                                    <button type="submit" class="btn btn-danger btn-sm"> Delete </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>
+
+<script>
+    function confirmDelete() {
+        return confirm("Are you sure you want to delete this gym hall?");
+    }
+</script>

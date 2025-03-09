@@ -15,14 +15,12 @@ namespace ExamProjectOne.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly SignInManager<ApplicationUser> _signInManager;
         private ApplicationUser? _person;
         private List<ApplicationUser> _people;
-        public EmployeeController(UserManager<ApplicationUser> userManager, ApplicationDbContext context, SignInManager<ApplicationUser> signInManager)
+        public EmployeeController(UserManager<ApplicationUser> userManager, ApplicationDbContext context)
         {
             _userManager = userManager;
             _context = context;
-            _signInManager = signInManager;
         }
         //Query user from database
         public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)

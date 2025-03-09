@@ -1,0 +1,81 @@
+﻿@model ExamProjectOne.Models.ScheduleModel
+@{
+    ViewData["Title"] = "Create Schedule";
+}
+
+<h1 class="text-center">Create Schedule</h1>
+
+<div class="container mt-4">
+    <form asp-action="Create" method="post" id="createScheduleForm">
+        <div class="mb-3">
+            <label class="form-label">Title</label>
+            <input type="text" class="form-control" asp-for="Title" required />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Start Time</label>
+            <input type="time" class="form-control" asp-for="StartTime" required />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">End Time</label>
+            <input type="time" class="form-control" asp-for="EndTime" required />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Date</label>
+            <input type="date" class="form-control" asp-for="Date" required />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Capacity</label>
+            <input type="number" class="form-control" asp-for="Capacity" required min="1" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Select coach</label>
+            <select class="form-control" asp-for="CoachId" required>
+                <option value="">Select a Coach</option>
+                @foreach (var coach in Model.Coaches)
+                {
+                    <option value="@coach.Id">@coach.User.UserName</option>
+                }
+            </select>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Select gym hall</label>
+            <select class="form-control" asp-for="GymHallId" required>
+                <option value="">Select a gym hall</option>
+                @foreach (var gym in Model.GymHalls)
+                {
+                    <option value="@gym.Id">@gym.Name</option>
+                }
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <button type="submit" class="btn btn-primary">Create schedule</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    const groupSessionCheckbox = document.getElementById('groupSession');
+    const capacityField = document.getElementById('capacityField');
+    const gymHallSelect = document.getElementById('gymHallSelect');
+    const capacityInput = document.getElementById('capacity');
+    const form = document.getElementById('createScheduleForm');
+
+    form.addEventListener('submit', function (event) {
+        if (groupSessionCheckbox.checked) {
+            const selectedGymHall = gymHallSelect.selectedOptions[0];
+            const gymHallCapacity = selectedGymHall ? parseInt(selectedGymHall.getAttribute('data-capacity')) : 0;
+            const inputCapacity = parseInt(capacityInput.value);
+
+            if (inputCapacity > gymHallCapacity) {
+                event.preventDefault();
+                alert(`Capacity cannot exceed the Gym Hall capacity of ${gymHallCapacity}.`);
+            }
+        }
+    });
+</script>
