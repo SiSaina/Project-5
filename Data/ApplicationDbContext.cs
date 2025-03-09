@@ -11,6 +11,12 @@ namespace ExamProjectOne.Data
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+            builder.Entity<Permission>().HasData(
+                new Permission { Id = 1, Name = "Read" },
+                new Permission { Id = 2, Name = "Create" },
+                new Permission { Id = 3, Name = "Update" },
+                new Permission { Id = 4, Name = "Delete" }
+            );
 
             // one to one: coach -> user
             builder.Entity<Coach>()
@@ -43,9 +49,7 @@ namespace ExamProjectOne.Data
                 .HasOne(a => a.Customer)
                 .WithMany()
                 .HasForeignKey(a => a.CustomerId)
-                .OnDelete(DeleteBehavior.NoAction);
-            // Many to one: appointment -> gymhall
-
+                .OnDelete(DeleteBehavior.SetNull);
 
             // one to one: group training -> schedule
             builder.Entity<GroupTraining>()
@@ -66,8 +70,6 @@ namespace ExamProjectOne.Data
                 .HasForeignKey(gtc => gtc.CustomerId)
                 .OnDelete(DeleteBehavior.SetNull);
 
-
-
             // one to one: schedule -> coach
             builder.Entity<Schedule>()
                 .HasOne(s => s.Coach)
@@ -80,6 +82,18 @@ namespace ExamProjectOne.Data
                 .WithMany()
                 .HasForeignKey(s => s.GymHallId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            // one to many: user -> permission
+            builder.Entity<UserPermission>()
+                .HasOne(up => up.User)
+                .WithMany()
+                .HasForeignKey(up => up.UserId)
+                .OnDelete(DeleteBehavior.Cascade);
+            // one to many: permission -> user
+            builder.Entity<UserPermission>()
+                .HasOne(up => up.Permission)
+                .WithMany(p => p.UserPermissions)
+                .HasForeignKey(up => up.PermissionId);
         }
         public DbSet<Coach> Coaches { get; set; }
         public DbSet<Customer> Customers { get; set; }
@@ -89,5 +103,8 @@ namespace ExamProjectOne.Data
         public DbSet<Appointment> Appointments { get; set; }
         public DbSet<GroupTraining> GroupTrainings { get; set; }
         public DbSet<GroupTrainingCustomer> GroupTrainingCustomers { get; set; }
+        public DbSet<Permission> Permissions { get; set; }
+        public DbSet<UserPermission> UserPermissions { get; set; }
+
     }
 }

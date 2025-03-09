@@ -5,7 +5,7 @@
 <h1 class="text-center">Schedual Management</h1>
 
 <div class="container mt-4">
-    <a asp-controller="Schedule" asp-action="Create" class="btn btn-primary mb-3"> Add Schedual </a>
+    <a asp-controller="Schedule" asp-action="Create" class="btn btn-primary mb-3"> Add Schedule </a>
     
     <table class="table table-bordered">
         <thead class="table-dark">
@@ -34,8 +34,8 @@
                         <td>@sc.EndTime</td>
                         <td>@sc.Date.ToShortDateString()</td>
                         <td>@sc.Capacity</td>
-                        <td>@sc.Coach.User.UserName</td>
-                        <td>@sc.GymHall.Name</td>
+                        <td>@sc.CoachOne.User.UserName</td>
+                        <td>@sc.GymHallOne.Name</td>
                         <td>
                             <button class="btn btn-secondary" type="button" data-bs-toggle="collapse" data-bs-target="#customerList-@sc.Id">
                                 View Customers (@sc.Customers.Count)

@@ -9,14 +9,14 @@ namespace ExamProjectOne.Models
         [Key]
         public int Id { get; set; }
         [Required]
-        public int CustomerId { get; set; }
+        public int? CustomerId { get; set; }
         [Required]
-        public int ScheduleId { get; set; }
+        public int? ScheduleId { get; set; }
         [Required]
         [ForeignKey("CustomerId")]
-        public Customer Customer { get; set; }
+        public Customer? Customer { get; set; }
         [Required]
         [ForeignKey("ScheduleId")]
-        public Schedule Schedule { get; set; }
+        public Schedule? Schedule { get; set; }
     }
 }

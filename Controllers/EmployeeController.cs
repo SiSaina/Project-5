@@ -272,12 +272,12 @@ namespace ExamProjectOne.Controllers
                 if (_person.Customer == null)
                 {
                     _person.Customer = new Customer { UserId = id };
-                    await _userManager.AddToRoleAsync(_person, "customer");
+                    await _userManager.AddToRoleAsync(_person, "Customer");
                 }
             }
             else
             {
-                await RemoveRole(_person, "customer", model.StatusSupervisor);
+                await _userManager.RemoveFromRoleAsync(_person, "Customer");
                 _person.Customer = null;
             }
 
@@ -326,15 +326,19 @@ namespace ExamProjectOne.Controllers
         }
         private async Task AddRole(ApplicationUser user, string role, string status)
         {
-            var Role = await _userManager.GetRolesAsync(user);
+            var roles = await _userManager.GetRolesAsync(user);
             var targetRole = status == "Regular" ? role : $"Senior {role}";
 
-            if (!Role.Contains(targetRole))
+            var roleToRemove = roles.FirstOrDefault(r =>
+                r.Equals(role, StringComparison.OrdinalIgnoreCase) ||
+                r.Equals($"Senior {role}", StringComparison.OrdinalIgnoreCase));
+            if (roleToRemove != null && roleToRemove != targetRole)
             {
-                foreach (var existingRole in Role)
-                {
-                    await _userManager.RemoveFromRoleAsync(user, existingRole);
-                }
+                await _userManager.RemoveFromRoleAsync(user, roleToRemove);
+            }
+
+            if (!roles.Contains(targetRole))
+            {
                 await _userManager.AddToRoleAsync(user, targetRole);
             }
         }

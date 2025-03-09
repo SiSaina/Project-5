@@ -5,7 +5,10 @@
 <h1 class="text-center">Gym hall Management</h1>
 
 <div class="container mt-4">
-    <a asp-controller="GymHall" asp-action="Upsert" class="btn btn-primary"> Add Gym hall </a>
+    @if (!User.IsInRole("Coach"))
+    {
+        <a asp-controller="GymHall" asp-action="Upsert" class="btn btn-primary"> Add Gym hall </a>
+    }
     <h2>Gym hall</h2>
     <table class="table table-bordered">
         <thead class="table-dark">
@@ -26,13 +29,16 @@
                         <td>@gm.Name</td>
                         <td>@gm.Capacity</td>
                         <td>
-                            <div class="d-flex gap-2">
-                                <a asp-controller="GymHall" asp-action="Upsert" asp-route-id="@gm.Id" class="btn btn-warning btn-sm"> Update </a>
-                                <form asp-controller="GymHall" asp-action="Delete" method="post" class="d-inline-block" onsubmit="return confirmDelete()">
-                                    <input type="hidden" name="id" value="@gm.Id" />
-                                    <button type="submit" class="btn btn-danger btn-sm"> Delete </button>
-                                </form>
-                            </div>
+                            @if (!User.IsInRole("Coach"))
+                            {
+                                <div class="d-flex gap-2">
+                                    <a asp-controller="GymHall" asp-action="Upsert" asp-route-id="@gm.Id" class="btn btn-warning btn-sm"> Update </a>
+                                    <form asp-controller="GymHall" asp-action="Delete" method="post" class="d-inline-block" onsubmit="return confirmDelete()">
+                                        <input type="hidden" name="id" value="@gm.Id" />
+                                        <button type="submit" class="btn btn-danger btn-sm"> Delete </button>
+                                    </form>
+                                </div>
+                            }
                         </td>
                     </tr>
                 }

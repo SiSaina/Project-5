@@ -90,23 +90,24 @@ namespace ExamProjectOne.Models
         [Required]
         public int Capacity { get; set; }
 
-        public List<Customer>? Customers { get; set; }
+        public List<Customer>? Customers { get; set; } = [];
         public List<Coach>? Coaches { get; set; } = [];
         public List<GymHall>? GymHalls { get; set; } = [];
 
-        public List<int>? CustomerId { get; set; }
-        public Coach? Coach { get; set; }
-        public GymHall? GymHall { get; set; }
+        public Customer? CustomerOne { get; set; }
+        public Coach? CoachOne { get; set; }
+        public GymHall? GymHallOne { get; set; }
 
+        public int CustomerId { get; set; }
         public int CoachId { get; set; }
         public int GymHallId { get; set; }
 
-        public List<int?> SelectCustomer { get; set; }
+        public List<int?> SelectCustomer { get; set; } = [];
 
-        public string CoachName { get; set; }
-        public string GymHallName { get; set; }
+        public string CoachName { get; set; } = string.Empty;
+        public string GymHallName { get; set; } = string.Empty;
 
-        public string Action { get; set; }
+        public string Mode { get; set; } = string.Empty;
     }
 
 }

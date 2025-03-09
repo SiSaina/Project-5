@@ -32,16 +32,19 @@
                         <td>@sc.StartTime</td>
                         <td>@sc.EndTime</td>
                         <td>@sc.Date.ToShortDateString()</td>
-                        <td>@sc.Coach.User.UserName</td>
-                        <td>@sc.GymHall.Name</td>
-                        <td>@sc.Customer.User.UserName</td>
+                        <td>@sc.CoachOne.User.UserName</td>
+                        <td>@sc.GymHallOne.Name</td>
+                        <td>@sc.CustomerOne.User.UserName</td>
                         <td>
                             <div class="d-flex gap-2">
                                 <a asp-controller="Appointment" asp-action="Update" asp-route-id="@sc.Id" class="btn btn-warning btn-sm"> Update </a>
-                                <form asp-action="Delete" method="post" class="d-inline-block" onsubmit="return confirmDelete()">
-                                    <input type="hidden" name="id" value="@sc.Id" />
-                                    <button type="submit" class="btn btn-danger btn-sm"> Delete </button>
-                                </form>
+                                @if (!User.IsInRole("Coach"))
+                                {
+                                    <form asp-action="Delete" method="post" class="d-inline-block" onsubmit="return confirmDelete()">
+                                        <input type="hidden" name="id" value="@sc.Id" />
+                                        <button type="submit" class="btn btn-danger btn-sm"> Delete </button>
+                                    </form>
+                                }
                             </div>
                         </td>
                     </tr>
@@ -50,3 +53,8 @@
         </tbody>
     </table>
 </div>
+<script>
+    function confirmDelete() {
+        return confirm("Are you sure you want to delete this schedule?");
+    }
+</script>

@@ -4,6 +4,7 @@ using ExamProjectOne.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ExamProjectOne.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250309080657_AddPermission")]
+    partial class AddPermission
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -133,7 +136,7 @@ namespace ExamProjectOne.Data.Migrations
 
                     b.HasIndex("ScheduleId");
 
-                    b.ToTable("Appointments", (string)null);
+                    b.ToTable("Appointments");
                 });
 
             modelBuilder.Entity("ExamProjectOne.Models.Coach", b =>
@@ -169,7 +172,7 @@ namespace ExamProjectOne.Data.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("Coaches", (string)null);
+                    b.ToTable("Coaches");
                 });
 
             modelBuilder.Entity("ExamProjectOne.Models.Customer", b =>
@@ -189,7 +192,7 @@ namespace ExamProjectOne.Data.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("Customers", (string)null);
+                    b.ToTable("Customers");
                 });
 
             modelBuilder.Entity("ExamProjectOne.Models.GroupTraining", b =>
@@ -211,7 +214,7 @@ namespace ExamProjectOne.Data.Migrations
                     b.HasIndex("ScheduleId")
                         .IsUnique();
 
-                    b.ToTable("GroupTrainings", (string)null);
+                    b.ToTable("GroupTrainings");
                 });
 
             modelBuilder.Entity("ExamProjectOne.Models.GroupTrainingCustomer", b =>
@@ -234,7 +237,7 @@ namespace ExamProjectOne.Data.Migrations
 
                     b.HasIndex("GroupTrainingId");
 
-                    b.ToTable("GroupTrainingCustomers", (string)null);
+                    b.ToTable("GroupTrainingCustomers");
                 });
 
             modelBuilder.Entity("ExamProjectOne.Models.GymHall", b =>
@@ -254,7 +257,7 @@ namespace ExamProjectOne.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("GymHalls", (string)null);
+                    b.ToTable("GymHalls");
                 });
 
             modelBuilder.Entity("ExamProjectOne.Models.Permission", b =>
@@ -271,7 +274,7 @@ namespace ExamProjectOne.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Permissions", (string)null);
+                    b.ToTable("Permissions");
 
                     b.HasData(
                         new
@@ -329,7 +332,7 @@ namespace ExamProjectOne.Data.Migrations
 
                     b.HasIndex("GymHallId");
 
-                    b.ToTable("Schedules", (string)null);
+                    b.ToTable("Schedules");
                 });
 
             modelBuilder.Entity("ExamProjectOne.Models.Supervisor", b =>
@@ -361,7 +364,7 @@ namespace ExamProjectOne.Data.Migrations
                     b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.ToTable("Supervisors", (string)null);
+                    b.ToTable("Supervisors");
                 });
 
             modelBuilder.Entity("ExamProjectOne.Models.UserPermission", b =>
@@ -389,7 +392,7 @@ namespace ExamProjectOne.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserPermissions", (string)null);
+                    b.ToTable("UserPermissions");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

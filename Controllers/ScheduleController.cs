@@ -2,73 +2,114 @@
 using ExamProjectOne.Models;
 using ExamProjectOne.Data;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.Blazor;
-using System.Linq;
+using Microsoft.AspNetCore.Identity;
 
 namespace ExamProjectOne.Controllers
 {
     public class ScheduleController : Controller
     {
-        private List<Schedule> Schedules { get; set; }
-        private List<GroupTraining> GroupTrainings { get; set; }
-        private ApplicationDbContext _context;
-        public ScheduleController(ApplicationDbContext Context) 
+        private readonly ApplicationDbContext _context;
+        private readonly UserManager<ApplicationUser> _userManager;
+        public ScheduleController(ApplicationDbContext Context, UserManager<ApplicationUser> userManager) 
         {
-            Schedules = [];
-            GroupTrainings = [];
             _context = Context;
+            _userManager = userManager;
         }
 
+        private async Task<List<GroupTraining>> GetGroupTrainingAsync(string id)
+        {
+            var query = _context.GroupTrainings
+                .Include(s => s.Schedule).ThenInclude(c => c.Coach).ThenInclude(u => u.User)
+                .Include(s => s.Schedule).ThenInclude(g => g.GymHall)
+                .Include(gt => gt.GroupTrainingCustomers).ThenInclude(c => c.Customer).ThenInclude(u => u.User)
+                .AsQueryable();
+
+            if (User.IsInRole("Coach"))
+            {
+                query = query.Where(g => g.Schedule.Coach.UserId == id);
+            }
+            return await query.ToListAsync();
+        }
+        private async Task<ScheduleModel> GetScheduleModelAsync(int? groupId = null, string? userId = null)
+        {
+            var model = new ScheduleModel
+            {
+                Customers = _context.Customers.Include(u => u.User).ToList(),
+                GymHalls = _context.GymHalls.ToList(),
+            };
+
+            if (userId != null && User.IsInRole("Coach"))
+            {
+                var coach = await _context.Coaches.Include(u => u.User).FirstOrDefaultAsync(c => c.UserId == userId);
+                if (coach != null) model.Coaches = [coach];
+            }
+            else model.Coaches = _context.Coaches.Include(u => u.User).ToList();
+
+            if (groupId.HasValue)
+            {
+                var group = await _context.GroupTrainings
+                    .Include(s => s.Schedule).ThenInclude(c => c.Coach).ThenInclude(u => u.User)
+                    .Include(s => s.Schedule).ThenInclude(g => g.GymHall)
+                    .Include(gt => gt.GroupTrainingCustomers).ThenInclude(c => c.Customer).ThenInclude(u => u.User)
+                    .FirstOrDefaultAsync(g => g.Id == groupId);
+
+                if (group?.Schedule != null)
+                {
+                    model.Title = group.Schedule.Title;
+                    model.StartTime = group.Schedule.StartTime;
+                    model.EndTime = group.Schedule.EndTime;
+                    model.Date = group.Schedule.Date;
+/*                    model.CustomerId = group.GroupTrainingCustomers.CustomerId ?? 0;*/
+                    model.CoachId = group.Schedule.CoachId;
+                    model.GymHallId = group.Schedule.GymHallId;
+                }
+            }
+
+            return model;
+        }
         public async Task<IActionResult> Read()
         {
-            GroupTrainings = await _context.GroupTrainings
-                .Include(s => s.Schedule)
-                    .ThenInclude(c => c.Coach)
-                    .ThenInclude(u => u.User)
-                .Include(s => s.Schedule)
-                    .ThenInclude(g => g.GymHall)
-                .Include(gt => gt.GroupTrainingCustomers)
-                    .ThenInclude(c => c.Customer)
-                    .ThenInclude(u => u.User)
-                .ToListAsync();
+            var userId = _userManager.GetUserId(User);
+            var group = await GetGroupTrainingAsync(userId);
+            var model = group.Select(g => new ScheduleModel
+            {
+                Id = g.Schedule.Id,
+                Title = g.Schedule.Title,
+                StartTime = g.Schedule.StartTime,
+                EndTime = g.Schedule.EndTime,
+                Date = g.Schedule.Date,
+                Capacity = g.Capacity,
+                CoachOne = g.Schedule.Coach,
+                GymHallOne = g.Schedule.GymHall,
 
-            var ScheduleModels = GroupTrainings
-                .GroupBy(gt => gt.Schedule)
-                .Select(g => new ScheduleModel
-                {
-                    Id = g.Key.Id,
-                    Title = g.Key.Title,
-                    StartTime = g.Key.StartTime,
-                    EndTime = g.Key.EndTime,
-                    Date = g.Key.Date,
-                    Capacity = g.First().Capacity,
-                    Coach = g.Key.Coach,
-                    GymHall = g.Key.GymHall,
+                Customers = g.GroupTrainingCustomers.Select(gtc => gtc.Customer).Distinct().ToList(),
+            }).ToList();
 
-                    Customers = g.SelectMany(gt => gt.GroupTrainingCustomers.Select(gtc => gtc.Customer)).Distinct().ToList(),
-                }).ToList();
-
-            return View(ScheduleModels);
+            return View(model);
         }
 
         public IActionResult Create()
         {
-            var model = new ScheduleModel
-            {
-                Coaches = _context.Coaches.Include(c => c.User).ToList(),
-                GymHalls = _context.GymHalls.ToList()
-            };
+            var userId = _userManager.GetUserId(User);
+            var coach = _context.Coaches.Include(u => u.User).FirstOrDefault(c => c.UserId == userId);
 
+            ScheduleModel scheduleModel = new();
+            var model = scheduleModel;
+            if (coach == null)
+            {
+                model.Coaches = _context.Coaches.Include(c => c.User).ToList();
+                model.GymHalls = _context.GymHalls.ToList();
+            }
+            else
+            {
+                model.Coaches = [coach];
+                model.GymHalls = _context.GymHalls.ToList();
+            }
             return View(model);
         }
         [HttpPost]
         public async Task<IActionResult> Create(ScheduleModel model)
         {
-            ModelState.Remove("CoachName");
-            ModelState.Remove("GymHallName");
-            ModelState.Remove("SelectCustomer");
-            if (!ModelState.IsValid) return View(model);
-
             bool isOverlapping = await _context.Schedules
                 .AnyAsync(s => s.CoachId == model.CoachId &&
                 s.Date == model.Date &&
@@ -96,12 +137,12 @@ namespace ExamProjectOne.Controllers
             _context.GroupTrainings.Add(groupTraining);
 
             await _context.SaveChangesAsync();
-            return RedirectToAction("Select", new { groupTrainingId = groupTraining.Id, capacity = model.Capacity, action = "Select" });
+            return RedirectToAction("Select", new { groupTrainingId = groupTraining.Id, capacity = model.Capacity, mode = "Select" });
         }
 
         public async Task<IActionResult> Select(int groupTrainingId, int capacity, string mode)
         {
-            var customers = await _context.Customers.Include(c => c.User).ToListAsync();
+            var customers = await _context.Customers.Include(c => c.User).OrderBy(c => c.Id).ToListAsync();
 
             List<int?> existCustomer = [];
             if(groupTrainingId > 0)
@@ -117,15 +158,15 @@ namespace ExamProjectOne.Controllers
                 Capacity = capacity,
                 Customers = customers,
                 SelectCustomer = existCustomer,
-                Action = mode
+                Mode = mode
             };
             return View(model);
         }
         [HttpPost]
-        public async Task<IActionResult> SelectOrUpdate(List<int> selectCustomer, ScheduleModel model, int Capacity, int groupTrainingId, string action)
+        public async Task<IActionResult> SelectOrUpdate(List<int> selectCustomer, ScheduleModel model, int Capacity, int groupTrainingId, string mode)
         {
-            if (action == "Select") await HandleSelect(selectCustomer, Capacity, groupTrainingId);
-            if (action == "Update") await HandleUpdate(selectCustomer, Capacity, groupTrainingId, model);
+            if (mode == "Select") await HandleSelect(selectCustomer, Capacity, groupTrainingId);
+            if (mode == "Update") await HandleUpdate(selectCustomer, Capacity, groupTrainingId, model);
 
             return RedirectToAction("Read");
         }
@@ -133,20 +174,16 @@ namespace ExamProjectOne.Controllers
         public async Task<IActionResult> Update(int id)
         {
             var gt = await _context.GroupTrainings
-                .Include(gt => gt.Schedule)
-                    .ThenInclude(s => s.Coach)
-                    .ThenInclude(u => u.User)
-                .Include(gt => gt.Schedule)
-                    .ThenInclude(s => s.GymHall)
-                .Include(gt => gt.GroupTrainingCustomers)
-                    .ThenInclude(gtc => gtc.Customer)
-                    .ThenInclude(u => u.User)
+                .Include(gt => gt.Schedule).ThenInclude(s => s.Coach).ThenInclude(u => u.User)
+                .Include(gt => gt.Schedule).ThenInclude(s => s.GymHall)
+                .Include(gt => gt.GroupTrainingCustomers).ThenInclude(gtc => gtc.Customer).ThenInclude(u => u.User)
                 .FirstOrDefaultAsync(gt => gt.Schedule.Id == id);
-
-            var coaches = await _context.Coaches.Include(c => c.User).ToListAsync();
+            
             var gymHalls = await _context.GymHalls.ToListAsync();
 
-            var scheduleModel = new ScheduleModel
+            var userId = _userManager.GetUserId(User);
+            var coach = _context.Coaches.Include(u => u.User).FirstOrDefault(c => c.UserId == userId);
+            var model = new ScheduleModel
             {
                 Id = gt.Schedule.Id,
                 Title = gt.Schedule.Title,
@@ -159,23 +196,22 @@ namespace ExamProjectOne.Controllers
                 GymHallId = gt.Schedule.GymHallId,
 
                 Customers = gt.GroupTrainingCustomers.Select(gtc => gtc.Customer).ToList(),
-                Coaches = coaches,
                 GymHalls = gymHalls,
-
-                CoachName = gt.Schedule.Coach.User.UserName,
-                GymHallName = gt.Schedule.GymHall.Name,
-
             };
-            return View(scheduleModel);
+            if (coach == null)
+            {
+                model.Coaches = _context.Coaches.Include(u => u.User).ToList();
+            }
+            else
+            {
+                model.Coaches = [coach];
+            }
+
+            return View(model);
         }
         [HttpPost]
         public async Task<IActionResult> Update(ScheduleModel model)
         {
-            ModelState.Remove("CoachName");
-            ModelState.Remove("GymHallName");
-            ModelState.Remove("SelectCustomer");
-            if (!ModelState.IsValid) return View(model);
-
             var schedule = await _context.Schedules.FindAsync(model.Id);
             if (schedule == null) return NotFound();
 

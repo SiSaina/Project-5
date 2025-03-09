@@ -58,6 +58,7 @@ namespace ExamProjectOne.Areas.Identity.Pages.Account.Manage
             public string Gender { get; set; }
             public DateOnly BirthDate { get; set; }
             public string PassWord { get; set; } = "********";
+            public List<string> Role { get; set; }
             /// <summary>
             ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
             ///     directly from your code. This API may change or be removed in future releases.
@@ -70,6 +71,7 @@ namespace ExamProjectOne.Areas.Identity.Pages.Account.Manage
         private async Task LoadAsync(ApplicationUser user)
         {
             Username = await _userManager.GetUserNameAsync(user);
+            var roles = await _userManager.GetRolesAsync(user);
 
             Input = new InputModel
             {
@@ -78,7 +80,8 @@ namespace ExamProjectOne.Areas.Identity.Pages.Account.Manage
                 FirstName = user.FirstName,
                 LastName = user.LastName,
                 Gender = user.Gender,
-                BirthDate = user.DateOfBirth
+                BirthDate = user.DateOfBirth,
+                Role = [.. roles]
             };
         }
 
