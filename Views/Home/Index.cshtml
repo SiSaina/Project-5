@@ -2,7 +2,46 @@
     ViewData["Title"] = "Home Page";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="hero-section">
+    <div>
+        <h1>Welcome to Gym Frog</h1>
+        <h2>Hop Your Way to Greatness</h2>
+        <p>At Gym Frog, we don't just leap into fitness - we splash into it. Our trainers? They're hopping with enthusiasm. 
+            Our gym? It’s as bouncy as a frog on a lily pad. So, leave the flies behind, hop over to Gym Frog, and let’s get fit while having a ribbiting good time! </p>
+        <a asp-controller="Home" asp-action="About" class="btn btn-success btn-lg">Learn More</a>
+    </div>
+</div>
+
+<!-- Features Section -->
+<div class="container features-section">
+    <h2 class="text-center mb-5">Features</h2>
+    <div class="row">
+        <div class="col-lg-4 col-md-6 feature-card">
+            <div class="card shadow-lg">
+                <img src="~/images/image4.jpg" class="card-img-top" alt="feature image">
+                <div class="card-body">
+                    <h5 class="card-title">Customer service</h5>
+                    <p class="card-text">Our service is top notch and will make your experience smoother and more efficient.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6 feature-card">
+            <div class="card shadow-lg">
+                <img src="~/images/image7.jpg" class="card-img-top" alt="feature image">
+                <div class="card-body">
+                    <h5 class="card-title">Great Community</h5>
+                    <p class="card-text">We believe in building connections, sharing experiences, and growing stronger together!</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-6 feature-card">
+            <div class="card shadow-lg">
+                <img src="~/images/image5.jpg" class="card-img-top" alt="feature image">
+                <div class="card-body">
+                    <h5 class="card-title">Desire physique</h5>
+                    <p class="card-text">Transform your body, transfrom your life, reach your full potential with Gym Frog.</p>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

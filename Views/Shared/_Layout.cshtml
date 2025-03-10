@@ -7,52 +7,53 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/ExamProjectOne.styles.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 </head>
-<body>
+<body class="mb-0">
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">ExamProjectOne</a>
+                <a class="navbar-brand text-dark fw-bold fs-3 text-uppercase" asp-area="" asp-controller="Home" asp-action="Index">Gym Frog</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
+                        <li class="nav-item fs-5">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
-                        @if (User.IsInRole("Customer"))
+                        @if (GlobalRoleManager.ActiveRole == "Customer")
                         {
-                            <li class="nav-item">
+                            <li class="nav-item fs-5">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Service</a>
                             </li>
-                            <li class="nav-item">
+                            <li class="nav-item fs-5">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Book appointment</a>
                             </li>
                         }
-                        @if (User.IsInRole("Admin") || User.IsInRole("Senior supervisor") || User.IsInRole("Senior coach") || User.IsInRole("Coach"))
+                        @if (GlobalRoleManager.ActiveRole == "Admin" || GlobalRoleManager.ActiveRole == "Senior supervisor" || GlobalRoleManager.ActiveRole == "Senior coach" || GlobalRoleManager.ActiveRole == "Coach" || GlobalRoleManager.ActiveRole == "Supervisor")
                         {
-                            <li class="nav-item">
+                            <li class="nav-item fs-5">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Appointment" asp-action="Read">Appointment</a>
                             </li>
-                            <li class="nav-item">
+                            <li class="nav-item fs-5">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Customer" asp-action="Read">Customer</a>
                             </li>
-                            <li class="nav-item">
+                            <li class="nav-item fs-5">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Schedule" asp-action="Read">Schedule</a>
                             </li>
-                            <li class="nav-item">
+                            <li class="nav-item fs-5">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="GymHall" asp-action="Read">Gym hall</a>
                             </li>
                         }
-                        @if(User.IsInRole("Admin") || User.IsInRole("Senior supervisor"))
+                        @if (GlobalRoleManager.ActiveRole == "Admin" || GlobalRoleManager.ActiveRole == "Senior supervisor")
                         {
-                            <li class="nav-item">
+                            <li class="nav-item fs-5">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Employee" asp-action="Read">Employee</a>
                             </li>
                         }
-                        <li class="nav-item">
+                        <li class="nav-item fs-5">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="About">About</a>
                         </li>
                     </ul>
@@ -66,10 +67,17 @@
             @RenderBody()
         </main>
     </div>
-
+   
     <footer class="border-top footer text-muted">
         <div class="container">
-            &copy; 2025 - ExamProjectOne - <a asp-area="" asp-controller="Home" asp-action="About">About</a>
+            <p>Follow Us</p>
+            <div class="social-icons">
+                <a href="#" class="fab fa-facebook-square"></a>
+                <a href="#" class="fab fa-twitter"></a>
+                <a href="#" class="fab fa-linkedin"></a>
+                <a href="#" class="fab fa-instagram"></a>
+            </div>
+            <p>&copy; 2025 MyApp - All Rights Reserved</p>
         </div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>

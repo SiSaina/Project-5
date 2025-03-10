@@ -1,3 +1,36 @@
 ﻿@{
-    ViewData["Title"] = "About us";
+    ViewData["Title"] = "About Us";
 }
+
+<div class="container py-5 about-page">
+    <div class="text-center mb-5">
+        <h1 class="display-4 fw-bold text-success">About Gym Frog 🐸</h1>
+        <p class="lead text-muted">Where gains leap higher and the vibes are always strong!</p>
+    </div>
+
+    <div class="row align-items-center">
+        <div class="col-md-6">
+            <img src="~/images/image8.jpg" alt="Gym Frog Community" class="img-fluid rounded shadow">
+        </div>
+        <div class="col-md-6">
+            <h2 class="fw-semibold text-dark">Who We Are</h2>
+            <p class="text-muted">
+                Gym Frog is more than just a fitness center — we're a high-energy community hopping toward health and happiness! Whether you're lifting heavy, dancing in Cambodia, or just learning the ropes, we’ve got your back (and your biceps).
+            </p>
+
+            <h2 class="fw-semibold text-dark mt-4">Why Choose Us?</h2>
+            <ul class="list-unstyled text-muted">
+                <li>✅ Passionate coaches</li>
+                <li>✅ Fun and flexible classes</li>
+                <li>✅ Clean and cozy workout spaces</li>
+                <li>✅ The only gym with frog-level agility 💪🐸</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="text-center mt-5">
+        <h3 class="fw-bold text-dark">Join the Leap Today!</h3>
+        <p class="text-muted">We’re building a community that supports every fitness goal — one jump at a time.</p>
+        <a asp-controller="Home" asp-action="Index" class="btn btn-success btn-lg mt-3">Hop Back Home</a>
+    </div>
+</div>

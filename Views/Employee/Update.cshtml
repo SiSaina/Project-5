@@ -98,14 +98,15 @@
         </div>
     </div>
     <button type="submit" name="action" value="Coach" class="btn btn-primary">Update Coach</button>
-    <button type="submit" name="action" value="Supervisor" class="btn btn-primary">Update Supervisor</button>
+    <button type="submit" name="action" value="Supervisor" class="btn btn-primary" >Update Supervisor</button>
     <button type="submit" class="btn btn-primary">Update User</button>
-    <a href="@Url.Action("Read", "Employee")" class="btn btn-secondary">Cancel</a>
+    <a asp-action="Read" class="btn btn-secondary">Cancel</a>
 </form>
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         var roleDropdown = document.getElementById("roleDropdown");
+        console.log(roleDropdown);
 
         var supervisorField = document.getElementById("supervisorField");
         var coachField = document.getElementById("coachField");
@@ -114,8 +115,13 @@
         var shiftTimeField = document.getElementById("shiftTimeField");
         var workDayField = document.getElementById("workDayField");
 
+
         function toggleFieldsBasedOnRole() {
             var role = roleDropdown.options[roleDropdown.selectedIndex].value;
+            console.log(role);
+
+            var role2 = roleDropdown.value;
+            console.log(role2);
 
             supervisorField.style.display = (role === "Supervisor" || role === "Coach") ? "block" : "none";
             coachField.style.display = role === "Coach" ? "block" : "none";
@@ -124,16 +130,16 @@
                 statusField.value = "@Model.StatusCoach";
                 shiftTimeField.value = "@Model.ShiftTimeCoach";
                 workDayField.value = "@Model.WorkDayCoach";
-                updateSupervisorBtn.disabled = true;
+
             }
             if (role === "Supervisor") {
                 statusField.value = "@Model.StatusSupervisor";
                 shiftTimeField.value = "@Model.ShiftTimeSupervisor";
                 workDayField.value = "@Model.WorkDaySupervisor";
-                updateSupervisorBtn.disabled = false;
+
             }
         }
         roleDropdown.addEventListener("change", toggleFieldsBasedOnRole);
-        toggleFieldsBasedOnRole();
     });
+
 </script>

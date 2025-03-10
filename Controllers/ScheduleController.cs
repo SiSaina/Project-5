@@ -30,43 +30,6 @@ namespace ExamProjectOne.Controllers
             }
             return await query.ToListAsync();
         }
-        private async Task<ScheduleModel> GetScheduleModelAsync(int? groupId = null, string? userId = null)
-        {
-            var model = new ScheduleModel
-            {
-                Customers = _context.Customers.Include(u => u.User).ToList(),
-                GymHalls = _context.GymHalls.ToList(),
-            };
-
-            if (userId != null && User.IsInRole("Coach"))
-            {
-                var coach = await _context.Coaches.Include(u => u.User).FirstOrDefaultAsync(c => c.UserId == userId);
-                if (coach != null) model.Coaches = [coach];
-            }
-            else model.Coaches = _context.Coaches.Include(u => u.User).ToList();
-
-            if (groupId.HasValue)
-            {
-                var group = await _context.GroupTrainings
-                    .Include(s => s.Schedule).ThenInclude(c => c.Coach).ThenInclude(u => u.User)
-                    .Include(s => s.Schedule).ThenInclude(g => g.GymHall)
-                    .Include(gt => gt.GroupTrainingCustomers).ThenInclude(c => c.Customer).ThenInclude(u => u.User)
-                    .FirstOrDefaultAsync(g => g.Id == groupId);
-
-                if (group?.Schedule != null)
-                {
-                    model.Title = group.Schedule.Title;
-                    model.StartTime = group.Schedule.StartTime;
-                    model.EndTime = group.Schedule.EndTime;
-                    model.Date = group.Schedule.Date;
-/*                    model.CustomerId = group.GroupTrainingCustomers.CustomerId ?? 0;*/
-                    model.CoachId = group.Schedule.CoachId;
-                    model.GymHallId = group.Schedule.GymHallId;
-                }
-            }
-
-            return model;
-        }
         public async Task<IActionResult> Read()
         {
             var userId = _userManager.GetUserId(User);

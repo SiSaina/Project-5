@@ -110,4 +110,19 @@ namespace ExamProjectOne.Models
         public string Mode { get; set; } = string.Empty;
     }
 
+    [NotMapped]
+    public static class GlobalRoleManager
+    {
+        public static string ActiveRole { get; set; } = "Default";
+
+        public static void SetRole(string role)
+        {
+            ActiveRole = role;
+        }
+        public static void ClearRole()
+        {
+            ActiveRole = "DefaultRole";
+        }
+    }
+
 }

@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
+using ExamProjectOne.Models;
 
 namespace ExamProjectOne.Areas.Identity.Pages.Account
 {
@@ -26,6 +27,7 @@ namespace ExamProjectOne.Areas.Identity.Pages.Account
 
         public async Task<IActionResult> OnPost(string returnUrl = null)
         {
+            GlobalRoleManager.ClearRole();
             await _signInManager.SignOutAsync();
             _logger.LogInformation("User logged out.");
             if (returnUrl != null)

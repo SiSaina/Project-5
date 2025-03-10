@@ -19,59 +19,8 @@ namespace ExamProjectOne.Controllers
             _context = context;
             _userManager = userManager;
         }
-        private async Task<List<Appointment>> GetAppointmentsAsync(string id)
-        {
-            var query = _context.Appointments
-                .Include(c => c.Customer).ThenInclude(u => u.User)
-                .Include(s => s.Schedule).ThenInclude(g => g.GymHall)
-                .Include(s => s.Schedule).ThenInclude(c => c.Coach).ThenInclude(u => u.User)
-                .AsQueryable();
 
-            if (User.IsInRole("Coach"))
-            {
-                query = query.Where(a => a.Schedule.Coach.UserId == id);
-            }
-            return await query.ToListAsync();
-        }
-        private async Task<ScheduleModel> GetScheduleModelAsync(int? appointmentId = null, string? userId = null)
-        {
-            var model = new ScheduleModel
-            {
-                Customers = _context.Customers.Include(u => u.User).ToList(),
-                GymHalls = _context.GymHalls.ToList(),
-            };
-
-            if (userId != null && User.IsInRole("Coach"))
-            {
-                var coach = await _context.Coaches.Include(u => u.User).FirstOrDefaultAsync(c => c.UserId == userId);
-                if (coach != null)model.Coaches = [coach];
-            }
-            else model.Coaches = _context.Coaches.Include(u => u.User).ToList();
-
-            if (appointmentId.HasValue)
-            {
-                var appoint = await _context.Appointments
-                    .Include(c => c.Customer).ThenInclude(u => u.User)
-                    .Include(s => s.Schedule).ThenInclude(g => g.GymHall)
-                    .Include(s => s.Schedule).ThenInclude(c => c.Coach).ThenInclude(u => u.User)
-                    .FirstOrDefaultAsync(a => a.Id == appointmentId);
-
-                if (appoint?.Schedule != null)
-                {
-                    model.Title = appoint.Schedule.Title;
-                    model.StartTime = appoint.Schedule.StartTime;
-                    model.EndTime = appoint.Schedule.EndTime;
-                    model.Date = appoint.Schedule.Date;
-                    model.CustomerId = appoint.CustomerId ?? 0;
-                    model.CoachId = appoint.Schedule.CoachId;
-                    model.GymHallId = appoint.Schedule.GymHallId;
-                }
-            }
-
-            return model;
-        }
-
-        [Authorize(Roles = "Admin, Senior supervisor, Coach")]
+        [Authorize(Roles = "Admin, Senior supervisor, Senior coach, Supervisor, Coach")]
         public async Task<IActionResult> Read()
         {
             var userId = _userManager.GetUserId(User);
@@ -91,14 +40,18 @@ namespace ExamProjectOne.Controllers
 
             return View(model);
         }
-        [Authorize(Roles = "Admin, Senior supervisor, Coach")]
+
+
+        // -------- Create --------
+
+        [Authorize(Roles = "Admin, Senior supervisor, Senior coach, Supervisor, Coach")]
         public async Task<IActionResult> Create()
         {
             var userId = _userManager.GetUserId(User);
             var model = await GetScheduleModelAsync(null, userId);
             return View(model);
         }
-        [Authorize(Roles = "Admin, Senior supervisor, Coach")]
+        [Authorize(Roles = "Admin, Senior supervisor, Senior coach, Supervisor, Coach")]
         [HttpPost]
         public async Task<IActionResult> Create(ScheduleModel model)
         {
@@ -112,14 +65,18 @@ namespace ExamProjectOne.Controllers
 
             return RedirectToAction("Read");
         }
-        [Authorize(Roles = "Admin, Senior supervisor, Coach")]
+
+
+        // -------- Update --------
+
+        [Authorize(Roles = "Admin, Senior supervisor, Senior coach, Supervisor, Coach")]
         public async Task<IActionResult> Update(int id)
         {
             var model = await GetScheduleModelAsync(id);
             if (model.Customers == null) return View();
             return View(model);
         }
-        [Authorize(Roles = "Admin, Senior supervisor, Coach")]
+        [Authorize(Roles = "Admin, Senior supervisor, Senior coach, Supervisor, Coach")]
         [HttpPost]
         public async Task<IActionResult> Update(ScheduleModel model)
         {
@@ -150,7 +107,11 @@ namespace ExamProjectOne.Controllers
 
             return RedirectToAction("Read");
         }
-        [Authorize(Roles = "Admin, Senior supervisor")]
+
+
+        // -------- Delete --------
+
+        [Authorize(Roles = "Admin, Senior supervisor, Senior coach, Supervisor, Coach")]
         [HttpPost]
         public async Task<IActionResult> Delete(int id)
         {
@@ -163,6 +124,57 @@ namespace ExamProjectOne.Controllers
             return RedirectToAction("Read");
         }
 
+        private async Task<List<Appointment>> GetAppointmentsAsync(string id)
+        {
+            var query = _context.Appointments
+                .Include(c => c.Customer).ThenInclude(u => u.User)
+                .Include(s => s.Schedule).ThenInclude(g => g.GymHall)
+                .Include(s => s.Schedule).ThenInclude(c => c.Coach).ThenInclude(u => u.User)
+                .AsQueryable();
+
+            if (User.IsInRole("Coach"))
+            {
+                query = query.Where(a => a.Schedule.Coach.UserId == id);
+            }
+            return await query.ToListAsync();
+        }
+        private async Task<ScheduleModel> GetScheduleModelAsync(int? appointmentId = null, string? userId = null)
+        {
+            var model = new ScheduleModel
+            {
+                Customers = _context.Customers.Include(u => u.User).ToList(),
+                GymHalls = _context.GymHalls.ToList(),
+            };
+
+            if (userId != null && User.IsInRole("Coach"))
+            {
+                var coach = await _context.Coaches.Include(u => u.User).FirstOrDefaultAsync(c => c.UserId == userId);
+                if (coach != null) model.Coaches = [coach];
+            }
+            else model.Coaches = _context.Coaches.Include(u => u.User).ToList();
+
+            if (appointmentId.HasValue)
+            {
+                var appoint = await _context.Appointments
+                    .Include(c => c.Customer).ThenInclude(u => u.User)
+                    .Include(s => s.Schedule).ThenInclude(g => g.GymHall)
+                    .Include(s => s.Schedule).ThenInclude(c => c.Coach).ThenInclude(u => u.User)
+                    .FirstOrDefaultAsync(a => a.Id == appointmentId);
+
+                if (appoint?.Schedule != null)
+                {
+                    model.Title = appoint.Schedule.Title;
+                    model.StartTime = appoint.Schedule.StartTime;
+                    model.EndTime = appoint.Schedule.EndTime;
+                    model.Date = appoint.Schedule.Date;
+                    model.CustomerId = appoint.CustomerId ?? 0;
+                    model.CoachId = appoint.Schedule.CoachId;
+                    model.GymHallId = appoint.Schedule.GymHallId;
+                }
+            }
+
+            return model;
+        }
         public async Task HandleCreate(ScheduleModel model, int id)
         {
 

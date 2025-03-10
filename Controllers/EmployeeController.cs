@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace ExamProjectOne.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    [Authorize(Roles = "Admin, Senior supervisor")]
     public class EmployeeController : Controller
     {
         private readonly ApplicationDbContext _context;

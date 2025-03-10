@@ -9,7 +9,6 @@ namespace ExamProjectOne.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        public bool IsAdmin => HttpContext.User.HasClaim("IsAdmin", bool.TrueString);
 
         public HomeController(ILogger<HomeController> logger)
         {
@@ -20,7 +19,7 @@ namespace ExamProjectOne.Controllers
         {
             return View();
         }
-        public IActionResult Privacy()
+        public IActionResult About()
         {
             return View();
         }

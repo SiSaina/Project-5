@@ -22,11 +22,13 @@ namespace ExamProjectOne.Areas.Identity.Pages.Account.Manage
         public ChangePasswordModel(
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
-            ILogger<ChangePasswordModel> logger)
+            ILogger<ChangePasswordModel> logger
+            )
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
+            Input = new InputModel();
         }
 
         /// <summary>
@@ -54,15 +56,6 @@ namespace ExamProjectOne.Areas.Identity.Pages.Account.Manage
             ///     directly from your code. This API may change or be removed in future releases.
             /// </summary>
             [Required]
-            [DataType(DataType.Password)]
-            [Display(Name = "Current password")]
-            public string OldPassword { get; set; }
-
-            /// <summary>
-            ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-            ///     directly from your code. This API may change or be removed in future releases.
-            /// </summary>
-            [Required]
             [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
             [DataType(DataType.Password)]
             [Display(Name = "New password")]
@@ -76,22 +69,25 @@ namespace ExamProjectOne.Areas.Identity.Pages.Account.Manage
             [Display(Name = "Confirm new password")]
             [Compare("NewPassword", ErrorMessage = "The new password and confirmation password do not match.")]
             public string ConfirmPassword { get; set; }
+            public string Code { get; set; } = string.Empty;
+            public string UserId { get; set; } = string.Empty;
         }
 
-        public async Task<IActionResult> OnGetAsync()
+        public async Task<IActionResult> OnGetAsync(string Code, string userId)
         {
-            var user = await _userManager.GetUserAsync(User);
+            var user = await _userManager.FindByIdAsync(userId);
+
             if (user == null)
             {
                 return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
             }
-
             var hasPassword = await _userManager.HasPasswordAsync(user);
             if (!hasPassword)
             {
                 return RedirectToPage("./SetPassword");
             }
-
+            Input.Code = Code;
+            Input.UserId = userId;
             return Page();
         }
 
@@ -102,27 +98,35 @@ namespace ExamProjectOne.Areas.Identity.Pages.Account.Manage
                 return Page();
             }
 
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
+            if (Input.Code == "123")
             {
-                return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
-            }
-
-            var changePasswordResult = await _userManager.ChangePasswordAsync(user, Input.OldPassword, Input.NewPassword);
-            if (!changePasswordResult.Succeeded)
-            {
-                foreach (var error in changePasswordResult.Errors)
+                var user = await _userManager.FindByIdAsync(Input.UserId);
+                if (user == null)
                 {
-                    ModelState.AddModelError(string.Empty, error.Description);
+                    return NotFound("User not found.");
                 }
-                return Page();
+
+                var removeResult = await _userManager.RemovePasswordAsync(user);
+                if (!removeResult.Succeeded)
+                {
+                    ModelState.AddModelError("", "Failed to remove old password.");
+                    return Page();
+                }
+
+                var addResult = await _userManager.AddPasswordAsync(user, Input.NewPassword);
+                if (!addResult.Succeeded)
+                {
+                    foreach (var error in addResult.Errors)
+                    {
+                        ModelState.AddModelError("", error.Description);
+                    }
+                    return Page();
+                }
+
+                StatusMessage = "Password reset successfully.";
+                return RedirectToPage("/Account/Login");
             }
-
-            await _signInManager.RefreshSignInAsync(user);
-            _logger.LogInformation("User changed their password successfully.");
-            StatusMessage = "Your password has been changed.";
-
-            return RedirectToPage();
+            return Page();
         }
     }
 }

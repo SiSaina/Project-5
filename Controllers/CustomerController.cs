@@ -1,5 +1,6 @@
 ﻿using ExamProjectOne.Data;
 using ExamProjectOne.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -8,6 +9,7 @@ using System.Data;
 
 namespace ExamProjectOne.Controllers
 {
+    [Authorize(Roles = "Admin, Senior supervisor, Senior coach, Supervisor, Coach")]
     public class CustomerController : Controller
     {
         public ApplicationDbContext _context { get; set; }
