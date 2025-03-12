@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ExamProjectOne.Controllers
 {
+    [Authorize(Roles = "Admin, Senior supervisor, Senior coach, Supervisor, Coach")]
     public class AppointmentController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -19,7 +20,7 @@ namespace ExamProjectOne.Controllers
             _userManager = userManager;
         }
 
-        [Authorize(Roles = "Admin, Senior supervisor, Senior coach, Supervisor, Coach")]
+
         public async Task<IActionResult> Read()
         {
             var userId = await GetCurrentUserIdAsync();
@@ -44,14 +45,12 @@ namespace ExamProjectOne.Controllers
 
         // -------- Create --------
 
-        [Authorize(Roles = "Admin, Senior supervisor, Senior coach, Supervisor, Coach")]
         public async Task<IActionResult> Create()
         {
             var userId = await GetCurrentUserIdAsync();
             var model = await GetScheduleModelAsync(null, userId);
             return View(model);
         }
-        [Authorize(Roles = "Admin, Senior supervisor, Senior coach, Supervisor, Coach")]
         [HttpPost]
         public async Task<IActionResult> Create(ScheduleModel model)
         {
@@ -69,14 +68,12 @@ namespace ExamProjectOne.Controllers
 
         // -------- Update --------
 
-        [Authorize(Roles = "Admin, Senior supervisor, Senior coach, Supervisor, Coach")]
         public async Task<IActionResult> Update(int id)
         {
             var model = await GetScheduleModelAsync(id);
             if (model.Customers == null) return View();
             return View(model);
         }
-        [Authorize(Roles = "Admin, Senior supervisor, Senior coach, Supervisor, Coach")]
         [HttpPost]
         public async Task<IActionResult> Update(ScheduleModel model)
         {
@@ -107,7 +104,6 @@ namespace ExamProjectOne.Controllers
 
         // -------- Delete --------
 
-        [Authorize(Roles = "Admin, Senior supervisor, Senior coach, Supervisor, Coach")]
         [HttpPost]
         public async Task<IActionResult> Delete(int id)
         {

@@ -1,10 +1,12 @@
 ﻿using ExamProjectOne.Data;
 using ExamProjectOne.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace ExamProjectOne.Controllers
 {
+    [Authorize(Roles = "Admin, Senior supervisor, Senior coach, Supervisor, Coach")]
     public class GymHallController : Controller
     {
         public ApplicationDbContext _context { get; set; }

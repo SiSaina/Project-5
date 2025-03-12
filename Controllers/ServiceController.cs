@@ -1,5 +1,6 @@
 ﻿using ExamProjectOne.Data;
 using ExamProjectOne.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -7,6 +8,7 @@ using System.Linq;
 
 namespace ExamProjectOne.Controllers
 {
+    [Authorize(Roles = "Customer")]
     public class ServiceController : Controller
     {
         private readonly ApplicationDbContext _context;

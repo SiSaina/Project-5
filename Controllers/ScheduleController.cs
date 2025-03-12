@@ -3,9 +3,11 @@ using ExamProjectOne.Models;
 using ExamProjectOne.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
 
 namespace ExamProjectOne.Controllers
 {
+    [Authorize(Roles = "Admin, Senior supervisor, Senior coach, Supervisor, Coach")]
     public class ScheduleController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -132,7 +134,7 @@ namespace ExamProjectOne.Controllers
         [HttpPost]
         public async Task<IActionResult> SelectOrUpdate(List<int> selectCustomer, ScheduleModel model, int Capacity, int groupTrainingId, string mode)
         {
-            if (mode == "Select") await HandleSelect(selectCustomer, Capacity, groupTrainingId);
+            if (mode == "Select") await HandleSelect(selectCustomer, Capacity, groupTrainingId, model);
             if (mode == "Update") await HandleUpdate(selectCustomer, Capacity, groupTrainingId, model);
 
             return RedirectToAction("Read");
