@@ -2,7 +2,7 @@
 
 <h2 class="text-center mb-4">@(Model.Id == 0 ? "Create" : "Update") Gym Hall</h2>
 
-<div class="container">
+<div class="container vh-100">
     <form asp-action="Upsert" method="post" class="card p-4 shadow-lg">
         
         <div class="mb-3">
@@ -18,8 +18,8 @@
         </div>
 
         <div class="d-flex justify-content-between mt-4">
-            <button type="submit" class="btn btn-success btn-lg">Save</button>
-            <a asp-action="Read" class="btn btn-secondary btn-lg">Cancel</a>
+            <button type="submit" class="btn btn-outline-success">Save</button>
+            <a asp-action="Read" class="btn btn-outline-secondary">Cancel</a>
         </div>
         
     </form>

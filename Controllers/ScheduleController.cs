@@ -38,7 +38,7 @@ namespace ExamProjectOne.Controllers
             var group = await GetGroupTrainingAsync(userId);
             var model = group.Select(g => new ScheduleModel
             {
-                Id = g.Schedule.Id,
+                Id = g.Id,
                 Title = g.Schedule.Title,
                 StartTime = g.Schedule.StartTime,
                 EndTime = g.Schedule.EndTime,
@@ -146,7 +146,7 @@ namespace ExamProjectOne.Controllers
                 .Include(gt => gt.Schedule).ThenInclude(s => s.Coach).ThenInclude(u => u.User)
                 .Include(gt => gt.Schedule).ThenInclude(s => s.GymHall)
                 .Include(gt => gt.GroupTrainingCustomers).ThenInclude(gtc => gtc.Customer).ThenInclude(u => u.User)
-                .FirstOrDefaultAsync(gt => gt.Schedule.Id == id);
+                .FirstOrDefaultAsync(gt => gt.Id == id);
             
             var gymHalls = await _context.GymHalls.ToListAsync();
 
@@ -154,7 +154,7 @@ namespace ExamProjectOne.Controllers
             var coach = _context.Coaches.Include(u => u.User).FirstOrDefault(c => c.UserId == userId);
             var model = new ScheduleModel
             {
-                Id = gt.Schedule.Id,
+                Id = gt.Id,
                 Title = gt.Schedule.Title,
                 StartTime = gt.Schedule.StartTime,
                 EndTime = gt.Schedule.EndTime,
@@ -175,8 +175,8 @@ namespace ExamProjectOne.Controllers
         [HttpPost]
         public async Task<IActionResult> Update(ScheduleModel model)
         {
-            var schedule = await _context.Schedules.FindAsync(model.Id);
-            if (schedule == null) return NotFound();
+            var group = await _context.GroupTrainings.FindAsync(model.Id);
+            if (group?.Schedule == null) return NotFound();
 
             bool isOverlapping = await _context.Schedules
                 .AnyAsync(s => s.CoachId == model.CoachId &&
@@ -190,24 +190,17 @@ namespace ExamProjectOne.Controllers
                 return RedirectToAction("Read");
             }
 
-            schedule.Title = model.Title;
-            schedule.StartTime = model.StartTime;
-            schedule.EndTime = model.EndTime;
-            schedule.Date = model.Date;
-            schedule.CoachId = model.CoachId;
-            schedule.GymHallId = model.GymHallId;
+            group.Schedule.Title = model.Title;
+            group.Schedule.StartTime = model.StartTime;
+            group.Schedule.EndTime = model.EndTime;
+            group.Schedule.Date = model.Date;
+            group.Schedule.CoachId = model.CoachId;
+            group.Schedule.GymHallId = model.GymHallId;
+            group.Capacity = model.Capacity;
 
-            _context.Schedules.Update(schedule);
+            _context.GroupTrainings.Update(group);
             await _context.SaveChangesAsync();
-
-            var groupTraining = await _context.GroupTrainings.FirstOrDefaultAsync(gt => gt.ScheduleId == model.Id);
-            if (groupTraining != null)
-            {
-                groupTraining.Capacity = model.Capacity;
-                _context.GroupTrainings.Update(groupTraining);
-                await _context.SaveChangesAsync();
-            }
-            return RedirectToAction("Select", new { groupTrainingId = groupTraining?.Id, capacity = model.Capacity, mode = "Update" });
+            return RedirectToAction("Select", new { groupTrainingId = group.Id, capacity = model.Capacity, mode = "Update" });
         }
 
         public async Task<IActionResult> HandleSelect(List<int> selectCustomer, int Capacity, int groupTrainingId, ScheduleModel model)
@@ -274,14 +267,18 @@ namespace ExamProjectOne.Controllers
         [HttpPost]
         public async Task<IActionResult> Delete(int id)
         {
-            var schedule = await _context.Schedules.FindAsync(id);
-            if (schedule == null) return NotFound();
-            var relatedGroupTrainings = await _context.GroupTrainings.Where(gt => gt.ScheduleId == id).ToListAsync();
+            var groupTraining = await _context.GroupTrainings.Include(gt => gt.Schedule).FirstOrDefaultAsync(gt => gt.Id == id);
 
-            _context.GroupTrainings.RemoveRange(relatedGroupTrainings);
-            _context.Schedules.Remove(schedule);
+            if (groupTraining == null) return NotFound();
+
+            var schedule = groupTraining.Schedule;
+
+            _context.GroupTrainings.Remove(groupTraining);
+
+            if (schedule != null) _context.Schedules.Remove(schedule);
+
             await _context.SaveChangesAsync();
-            TempData["SuccessMessage"] = "Delete successfully";
+            TempData["SuccessMessage"] = "Deleted successfully";
             return RedirectToAction("Read");
         }
     }

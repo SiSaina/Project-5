@@ -4,7 +4,7 @@
 
 <h1 class="text-center mt-4">Select Customer</h1>
 @await Html.PartialAsync("_AlertMessage")
-<div class="container mt-4">
+<div class="container mt-4 vh-100">
     <form method="post" asp-action="SelectOrUpdate" class="border p-4 rounded bg-light shadow-sm">
         <input type="hidden" name="groupTrainingId" value="@Model.Id" />
         <input type="hidden" name="Capacity" value="@Model.Capacity" />

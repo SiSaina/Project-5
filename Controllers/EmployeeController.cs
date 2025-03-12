@@ -37,6 +37,7 @@ namespace ExamProjectOne.Controllers
                     .Include(u => u.Supervisor)
                     .Include(u => u.Coach)
                     .Include(u => u.Customer)
+                    .OrderBy(u => u.UserName)
                     .ToListAsync();
             await next();
         }
