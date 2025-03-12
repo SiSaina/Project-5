@@ -1,64 +1,98 @@
 ﻿@model ExamProjectOne.Models.ScheduleModel
 @{
-    ViewData["Title"] = "Update appointment";
+    ViewData["Title"] = "Update Appointment";
 }
 
-<h1 class="text-center">Update appointment</h1>
-
+<h1 class="text-center my-5">Update Appointment</h1>
+@await Html.PartialAsync("_AlertMessage")
 <div class="container mt-4">
-    <form asp-action="Update" method="post">
-        <input asp-for="Id" hidden/>
-        <div class="mb-3">
-            <label class="form-label">Title</label>
-            <input type="text" class="form-control" asp-for="Title" required />
+    <form asp-action="Update" method="post" class="shadow-lg p-4 rounded bg-light">
+        <div class="row">
+            <div class="col-md-2 mb-3">
+                <label class="form-label">Id</label>
+                <input class="form-control" asp-for="Id" disabled />
+            </div>
+            <div class="col-md-10 mb-3">
+                <label class="form-label">Title</label>
+                <input type="text" class="form-control" asp-for="Title" placeholder="Enter appointment title" required />
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
         </div>
-        <div class="mb-3">
-            <label class="form-label">Start Time</label>
-            <input type="time" class="form-control" asp-for="StartTime" required />
-        </div>
-        <div class="mb-3">
-            <label class="form-label">End Time</label>
-            <input type="time" class="form-control" asp-for="EndTime" required />
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Start Time</label>
+                <input type="time" class="form-control" asp-for="StartTime" required />
+                <span asp-validation-for="StartTime" class="text-danger"></span>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">End Time</label>
+                <input type="time" class="form-control" asp-for="EndTime" required />
+                <span asp-validation-for="EndTime" class="text-danger"></span>
+            </div>
         </div>
         <div class="mb-3">
             <label class="form-label">Date</label>
             <input type="date" class="form-control" asp-for="Date" required />
+            <span asp-validation-for="Date" class="text-danger"></span>
         </div>
-
         <div class="mb-3">
-            <label class="form-label">Select coach</label>
-            <select class="form-control" asp-for="CoachId" required>
+            <label class="form-label">Select Coach</label>
+            <select class="form-select" asp-for="CoachId" required>
                 <option value="">Select a Coach</option>
                 @foreach (var coach in Model.Coaches)
                 {
                     <option value="@coach.Id">@coach.User.UserName</option>
                 }
             </select>
+            <span asp-validation-for="CoachId" class="text-danger"></span>
         </div>
         <div class="mb-3">
-            <label class="form-label">Select gym hall</label>
-            <select class="form-control" asp-for="GymHallId" required>
-                <option value="">Select a gym hall</option>
+            <label class="form-label">Select Gym Hall</label>
+            <select class="form-select" asp-for="GymHallId" required>
+                <option value="">Select a Gym Hall</option>
                 @foreach (var gym in Model.GymHalls)
                 {
                     <option value="@gym.Id">@gym.Name</option>
                 }
             </select>
+            <span asp-validation-for="GymHallId" class="text-danger"></span>
         </div>
         <div class="mb-3">
-            <label class="form-label">Select customer</label>
-            <select class="form-control" asp-for="CustomerId" required>
-                <option value="">Select a customer</option>
+            <label class="form-label">Select Customer</label>
+            <select class="form-select" asp-for="CustomerId" required>
+                <option value="">Select a Customer</option>
                 @foreach (var cus in Model.Customers)
                 {
                     <option value="@cus.Id">@cus.User.UserName</option>
                 }
             </select>
+            <span asp-validation-for="CustomerId" class="text-danger"></span>
+        </div>
+        <div class="mb-3 d-flex justify-content-between">
+            <button type="submit" class="btn btn-outline-success">Save Changes</button>
+            <a asp-action="Read" class="btn btn-outline-secondary">Cancel</a>
         </div>
 
-        <div class="mb-3">
-            <button type="submit" class="btn btn-primary">Save change</button>
-            <button type="button" class="btn btn-primary" asp-action="Read">Cancel</button>
-        </div>
     </form>
 </div>
+<style>
+    .form-label {
+        font-weight: bold;
+    }
+
+    .form-control, .form-select {
+        background-color: #f8f9fa;
+        border: 1px solid #ced4da;
+        border-radius: 0.375rem;
+    }
+
+        .form-control:focus {
+            border-color: #4CAF50;
+            box-shadow: 0 0 0 0.25rem rgba(76, 175, 80, 0.25);
+        }
+
+    .btn-outline-success, .btn-outline-secondary {
+        padding: 10px 20px;
+    }
+</style>

@@ -1,17 +1,18 @@
 ﻿@model ExamProjectOne.Models.ScheduleModel
 @{
-    ViewData["Title"] = "Create Appointment";
+    ViewData["Title"] = "Appointment";
 }
 
-<h1 class="text-center my-5">Create Appointment</h1>
-@await Html.PartialAsync("_AlertMessage")
+<h1 class="text-center mt-4">Book an Appointment</h1>
+
 <div class="container mt-4">
-    <form asp-action="Create" method="post" class="shadow-lg p-4 rounded bg-light">
+    <form asp-action="Book" method="post" class="border p-4 rounded bg-light shadow-sm">
         <div class="mb-3">
-            <label class="form-label">Title</label>
+            <label class="form-label">Reason for Booking</label>
             <input class="form-control" asp-for="Title" required />
             <span asp-validation-for="Title" class="text-danger"></span>
         </div>
+
         <div class="row">
             <div class="col-md-6 mb-3">
                 <label class="form-label">Start Time</label>
@@ -30,9 +31,10 @@
             <input type="date" class="form-control" asp-for="Date" required />
             <span asp-validation-for="Date" class="text-danger"></span>
         </div>
+
         <div class="mb-3">
             <label class="form-label">Select Coach</label>
-            <select class="form-select" asp-for="CoachId" required>
+            <select class="form-control" asp-for="CoachId" required>
                 <option value="">Select a Coach</option>
                 @foreach (var coach in Model.Coaches)
                 {
@@ -41,9 +43,10 @@
             </select>
             <span asp-validation-for="CoachId" class="text-danger"></span>
         </div>
+
         <div class="mb-3">
             <label class="form-label">Select Gym Hall</label>
-            <select class="form-select" asp-for="GymHallId" required>
+            <select class="form-control" asp-for="GymHallId" required>
                 <option value="">Select a Gym Hall</option>
                 @foreach (var gym in Model.GymHalls)
                 {
@@ -52,25 +55,14 @@
             </select>
             <span asp-validation-for="GymHallId" class="text-danger"></span>
         </div>
-        <div class="mb-3">
-            <label class="form-label">Select Customer</label>
-            <select class="form-select" asp-for="CustomerId" required>
-                <option value="">Select a Customer</option>
-                @foreach (var cus in Model.Customers)
-                {
-                    <option value="@cus.Id">@cus.User.UserName</option>
-                }
-            </select>
-            <span asp-validation-for="CustomerId" class="text-danger"></span>
-        </div>
 
         <div class="mb-3 d-flex justify-content-between">
-            <button type="submit" class="btn btn-outline-success">Create Appointment</button>
-            <a asp-action="Read" class="btn btn-outline-secondary">Cancel</a>
+            <button type="submit" class="btn btn-outline-primary">Book Appointment</button>
+            <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
         </div>
-
     </form>
 </div>
+
 <style>
     .form-label {
         font-weight: bold;
@@ -87,7 +79,8 @@
         box-shadow: 0 0 0 0.25rem rgba(76, 175, 80, 0.25);
     }
 
-    .btn-outline-success, .btn-outline-secondary {
+    .btn-outline-primary, .btn-outline-secondary {
         padding: 10px 20px;
     }
+
 </style>

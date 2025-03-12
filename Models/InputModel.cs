@@ -86,8 +86,6 @@ namespace ExamProjectOne.Models
         [Required]
         public DateTime Date { get; set; }
         [Required]
-        public bool GroupSession { get; set; }
-        [Required]
         public int Capacity { get; set; }
 
         public List<Customer>? Customers { get; set; } = [];
@@ -104,9 +102,7 @@ namespace ExamProjectOne.Models
 
         public List<int?> SelectCustomer { get; set; } = [];
 
-        public string CoachName { get; set; } = string.Empty;
-        public string GymHallName { get; set; } = string.Empty;
-
+        public string StatusAppoint { get; set; } = string.Empty;
         public string Mode { get; set; } = string.Empty;
     }
 

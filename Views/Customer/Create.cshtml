@@ -4,60 +4,90 @@
     ViewData["Title"] = "Add Customer";
 }
 
-<h2>Add Customer</h2>
+<h2 class="text-center my-5">Add Customer</h2>
+<div class="container mt-4">
+    <form asp-controller="Customer" asp-action="Create" method="post" class="shadow-lg p-4 rounded bg-light">
 
-<form asp-controller="Customer" asp-action="Create" method="post">
-    <div class="mb-3">
-        <label asp-for="Username" class="form-label">Username</label>
-        <input asp-for="Username" class="form-control" required />
-        <span asp-validation-for="Username" class="text-danger"></span>
-    </div>
-    <div class="mb-3">
-        <label asp-for="FirstName" class="form-label">First name</label>
-        <input asp-for="FirstName" class="form-control" required />
-        <span asp-validation-for="FirstName" class="text-danger"></span>
-    </div>
-    <div class="mb-3">
-        <label asp-for="LastName" class="form-label">Last name</label>
-        <input asp-for="LastName" class="form-control" required />
-        <span asp-validation-for="LastName" class="text-danger"></span>
-    </div>
-    <div class="mb-3">
-        <label asp-for="Gender" class="form-label">Gender</label>
-        <select asp-for="Gender" class="form-control">
-            <option value="Male">Male</option>
-            <option value="Female">Female</option>
-        </select>
-        <span asp-validation-for="Gender" class="text-danger"></span>
-    </div>
-    <div class="mb-3">
-        <label asp-for="Email" class="form-label">Email</label>
-        <input asp-for="Email" class="form-control" required />
-        <span asp-validation-for="Email" class="text-danger"></span>
-    </div>
-    <div class="mb-3">
-        <label asp-for="PhoneNumber" class="form-label">Phone Number</label>
-        <input asp-for="PhoneNumber" class="form-control" required />
-        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
-    </div>
-    <div class="mb-3">
-        <label asp-for="BirthDate" class="form-label">Date of birth</label>
-        <input asp-for="BirthDate" type="date" class="form-control" required />
-        <span asp-validation-for="BirthDate" class="text-danger"></span>
-    </div>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Username</label>
+                <input asp-for="Username" class="form-control" required />
+                <span asp-validation-for="Username" class="text-danger"></span>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Email</label>
+                <input asp-for="Email" class="form-control" required />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+        </div>
 
-    <div class="form-floating mb-3">
-        <input asp-for="Password" class="form-control" placeholder="password" required/>
-        <label asp-for="Password">Password</label>
-        <span asp-validation-for="Password" class="text-danger"></span>
-    </div>
-    <div class="form-floating mb-3">
-        <input asp-for="ConfirmPassword" class="form-control" placeholder="password" required />
-        <label asp-for="ConfirmPassword">Confirm Password</label>
-        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
-    </div>
-    <div class="mb-3">
-        <button type="submit" class="btn btn-success">Submit</button>
-        <a asp-action="Read" class="btn btn-secondary">Cancel</a>
-    </div>
-</form>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">First name</label>
+                <input asp-for="FirstName" class="form-control" required />
+                <span asp-validation-for="FirstName" class="text-danger"></span>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Last name</label>
+                <input asp-for="LastName" class="form-control" required />
+                <span asp-validation-for="LastName" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Phone Number</label>
+                <input asp-for="PhoneNumber" class="form-control" required />
+                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Date of birth</label>
+                <input asp-for="BirthDate" type="date" class="form-control" required />
+                <span asp-validation-for="BirthDate" class="text-danger"></span>
+            </div>
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Gender</label>
+            <select asp-for="Gender" class="form-select">
+                <option value="">Select gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+            </select>
+            <span asp-validation-for="Gender" class="text-danger"></span>
+        </div>
+        <div class="form-floating mb-3">
+            <input asp-for="Password" class="form-control" required/>
+            <label class="form-label">Password</label>
+            <span asp-validation-for="Password" class="text-danger"></span>
+        </div>
+        <div class="form-floating mb-3">
+            <input asp-for="ConfirmPassword" class="form-control" required />
+            <label class="form-label">Confirm Password</label>
+            <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+        </div>
+        <div class="mb-3 d-flex justify-content-between">
+            <button type="submit" class="btn btn-outline-success">Submit</button>
+            <a asp-action="Read" class="btn btn-outline-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+<style>
+    .form-label {
+        font-weight: bold;
+    }
+
+    .form-control, .form-select {
+        background-color: #f8f9fa;
+        border: 1px solid #ced4da;
+        border-radius: 0.375rem;
+    }
+
+    .form-control:focus {
+        border-color: #4CAF50;
+        box-shadow: 0 0 0 0.25rem rgba(76, 175, 80, 0.25);
+    }
+
+    .btn-outline-success, .btn-outline-secondary {
+        padding: 10px 20px;
+    }
+</style>

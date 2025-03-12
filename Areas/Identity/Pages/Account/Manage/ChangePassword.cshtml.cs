@@ -86,7 +86,7 @@ namespace ExamProjectOne.Areas.Identity.Pages.Account.Manage
             {
                 return RedirectToPage("./SetPassword");
             }
-            Input.Code = Code;
+            Input.Code = Code ?? "123";
             Input.UserId = userId;
             return Page();
         }

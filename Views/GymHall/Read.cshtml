@@ -2,11 +2,11 @@
     ViewData["Title"] = "Gym hall";
 }
 
-<h1 class="text-center">Gym hall Management</h1>
-
+<h1 class="text-center">Gym hall</h1>
+@await Html.PartialAsync("_AlertMessage")
 <div class="container vh-100 mt-4">
     <div class="d-flex justify-content-between mb-3">
-        @if (!User.IsInRole("Coach") || !User.IsInRole("Supervisor"))
+        @if (!(User.IsInRole("Coach") || User.IsInRole("Supervisor")))
         {
             <a asp-controller="GymHall" asp-action="Upsert" class="btn btn-outline-dark">Add Gym Hall</a>
         }

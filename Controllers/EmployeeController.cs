@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.AspNetCore.Authentication;
 using System.Data;
 using Microsoft.AspNetCore.Mvc.Filters;
 
@@ -34,6 +33,7 @@ namespace ExamProjectOne.Controllers
                     .FirstOrDefaultAsync(u => u.Id == id);
             }
             _people ??= await _context.Users
+                    .Where(u => u.Coach != null || u.Supervisor != null)
                     .Include(u => u.Supervisor)
                     .Include(u => u.Coach)
                     .Include(u => u.Customer)
@@ -85,7 +85,7 @@ namespace ExamProjectOne.Controllers
 
             var result = await _userManager.CreateAsync(user, model.Password);
 
-            if (!result.Succeeded) return View(model);
+            if (!result.Succeeded) return View("Error");
 
             //Create employee
             var person = CreateEmployee(model, user.Id);
@@ -98,6 +98,7 @@ namespace ExamProjectOne.Controllers
             await _userManager.AddToRoleAsync(user, RoleStatus);
 
             await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = "Created successfully";
             return RedirectToAction("Read");
         }
 
@@ -155,6 +156,7 @@ namespace ExamProjectOne.Controllers
             UpdateUser(_person, model);
 
             await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = "Updated successfully";
             return RedirectToAction("Read");
         }
 
@@ -185,21 +187,14 @@ namespace ExamProjectOne.Controllers
             {
                 await _userManager.RemoveFromRoleAsync(_person, existingRole);
             }
-            if (_person.Coach != null)
-            {
-                _context.Coaches.Remove(_person.Coach);
-            }
-            if (_person.Supervisor != null)
-            {
-                _context.Supervisors.Remove(_person.Supervisor);
-            }
-            if (_person.Customer != null)
-            {
-                _context.Customers.Remove(_person.Customer);
-            }
-            _context.Users.Remove(_person);
+            if (_person.Coach != null) _context.Coaches.Remove(_person.Coach);
+            if (_person.Supervisor != null) _context.Supervisors.Remove(_person.Supervisor);
+            if (_person.Customer != null) _context.Customers.Remove(_person.Customer);
 
+            _context.Users.Remove(_person);
             await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = "Deleted successfully";
             return RedirectToAction("Read");
         }
 
@@ -282,6 +277,7 @@ namespace ExamProjectOne.Controllers
             }
 
             await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = "Promoted successfully";
             return RedirectToAction("Read");
         }
 
@@ -391,9 +387,21 @@ namespace ExamProjectOne.Controllers
         private static List<string> GetWorkDayList(ApplicationUser user)
         {
             List<string> result = [];
-            if (user.Coach != null) result.Add(user.Coach.WorkDay);
-            if (user.Supervisor != null) result.Add(user.Supervisor.WorkDay);
+            if (user.Coach != null) result.Add(GetWorkDayType(user.Coach.WorkDay));
+            if (user.Supervisor != null) result.Add(GetWorkDayType(user.Supervisor.WorkDay));
             return result;
+        }
+        private static string GetWorkDayType(string workDay)
+        {
+            if (workDay == "Monday - Friday")
+            {
+                return "Weekday";
+            }
+            else if (workDay == "Saturday - Sunday")
+            {
+                return "Weekend";
+            }
+            return "";
         }
     }
 }

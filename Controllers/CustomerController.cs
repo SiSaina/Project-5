@@ -21,7 +21,7 @@ namespace ExamProjectOne.Controllers
         }
         public async Task<IActionResult> Read()
         {
-            var customers = await _context.Customers.Include(c => c.User).ToListAsync();
+            var customers = await _context.Customers.OrderBy(c => c.Id).Include(c => c.User).ToListAsync();
 
             return View(new { Customers = customers });
         }
@@ -48,13 +48,17 @@ namespace ExamProjectOne.Controllers
                 EmailConfirmed = true,
             };
             var result = await _userManager.CreateAsync(user, model.Password);
-            if (!result.Succeeded) return View(model);
+            if (!result.Succeeded)
+            {
+                TempData["ErrorMessage"] = "Fail to create";
+                return RedirectToAction("Read");
+            }
             var customer = new Customer { UserId = user.Id };
 
             _context.Customers.Add(customer);
             await _userManager.AddToRoleAsync(user, "Customer");
             await _context.SaveChangesAsync();
-
+            TempData["SuccessMessage"] = "Created successfully";
             return RedirectToAction("Read");
         }
 
@@ -84,6 +88,7 @@ namespace ExamProjectOne.Controllers
             }
 
             await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = "Update successfully";
             return RedirectToAction("Read");
         }
 
@@ -96,8 +101,9 @@ namespace ExamProjectOne.Controllers
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var customer = _context.Customers.Include(c => c.User).FirstOrDefault(c => c.Id == id);
-
+            if (customer == null) return View("Error");
             var user = customer?.User;
+            if (user == null) return View("Error");
             var roles = await _userManager.GetRolesAsync(user);
 
             if (roles.Count > 1)
@@ -111,6 +117,7 @@ namespace ExamProjectOne.Controllers
             _context.Customers.Remove(customer);
 
             await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = "Delete successfully";
             return RedirectToAction("Read");
         }
 

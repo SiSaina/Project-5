@@ -33,6 +33,7 @@ namespace ExamProjectOne.Controllers
                 if (gymHall.Id == 0) _context.GymHalls.Add(gymHall);
                 else _context.GymHalls.Update(gymHall);
                 await _context.SaveChangesAsync();
+                TempData["SuccessMessage"] = "Action completed successfully";
                 return RedirectToAction("Read");
             }
             return View(gymHall);
@@ -47,6 +48,7 @@ namespace ExamProjectOne.Controllers
                 _context.GymHalls.Remove(gymHall);
                 await _context.SaveChangesAsync();
             }
+            TempData["SuccessMessage"] = "Delete successfully";
             return RedirectToAction("Read");
         }
     }

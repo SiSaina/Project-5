@@ -9,6 +9,8 @@ namespace ExamProjectOne.Models
         [Key]
         public int Id { get; set; }
         [Required]
+        public string Status { get; set; } = string.Empty;
+        [Required]
         public int? CustomerId { get; set; }
         [Required]
         public int? ScheduleId { get; set; }

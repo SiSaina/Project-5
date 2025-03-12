@@ -78,7 +78,11 @@ namespace ExamProjectOne.Controllers
                 s.Date == model.Date &&
                 (model.StartTime < s.EndTime && model.EndTime > s.StartTime));
 
-            if (isOverlapping) return View(model);
+            if (isOverlapping)
+            {
+                TempData["ErrorMessage"] = "Coach is unavailable at that moment";
+                return RedirectToAction("Read");
+            }
 
             var schedule = new Schedule
             {
@@ -161,14 +165,8 @@ namespace ExamProjectOne.Controllers
                 Customers = gt.GroupTrainingCustomers.Select(gtc => gtc.Customer).ToList(),
                 GymHalls = gymHalls,
             };
-            if (coach == null)
-            {
-                model.Coaches = _context.Coaches.Include(u => u.User).ToList();
-            }
-            else
-            {
-                model.Coaches = [coach];
-            }
+            if (coach == null) model.Coaches = _context.Coaches.Include(u => u.User).ToList();
+            else model.Coaches = [coach];
 
             return View(model);
         }
@@ -184,7 +182,11 @@ namespace ExamProjectOne.Controllers
                                s.Date == model.Date &&
                                (model.StartTime < s.EndTime && model.EndTime > s.StartTime));
 
-            if (isOverlapping) return View(model);
+            if (isOverlapping)
+            {
+                TempData["ErrorMessage"] = "Coach is unavailable at that moment";
+                return RedirectToAction("Read");
+            }
 
             schedule.Title = model.Title;
             schedule.StartTime = model.StartTime;
@@ -206,14 +208,15 @@ namespace ExamProjectOne.Controllers
             return RedirectToAction("Select", new { groupTrainingId = groupTraining?.Id, capacity = model.Capacity, mode = "Update" });
         }
 
-        public async Task<IActionResult> HandleSelect(List<int> selectCustomer, int Capacity, int groupTrainingId)
+        public async Task<IActionResult> HandleSelect(List<int> selectCustomer, int Capacity, int groupTrainingId, ScheduleModel model)
         {
             if (selectCustomer != null && selectCustomer.Count != 0)
             {
                 if (selectCustomer.Count > Capacity)
                 {
-                    ModelState.AddModelError("", $"You can only select up to {Capacity} customers. Please select fewer customers.");
-                    return View();
+                    TempData["ErrorMessage"] = $"You can only select up to {Capacity} customers. Please select fewer customers.";
+                    model.Customers = await _context.Customers.Include(c => c.User).ToListAsync();
+                    return View(model);
                 }
                 var groupTrainings = selectCustomer.Select(customerId => new GroupTrainingCustomer
                 {
@@ -224,10 +227,13 @@ namespace ExamProjectOne.Controllers
                 _context.GroupTrainingCustomers.AddRange(groupTrainings);
                 await _context.SaveChangesAsync();
 
+                TempData["SuccessMessage"] = "Created successfully";
                 return RedirectToAction("Read");
             }
 
-            return View();
+            TempData["ErrorMessage"] = "You must select at least one customer.";
+            model.Customers = await _context.Customers.Include(c => c.User).ToListAsync();
+            return View(model);
         }
         public async Task<IActionResult> HandleUpdate(List<int> selectCustomer, int Capacity, int groupTrainingId, ScheduleModel model)
         {
@@ -235,7 +241,7 @@ namespace ExamProjectOne.Controllers
             {
                 if (selectCustomer.Count > Capacity)
                 {
-                    ModelState.AddModelError("", $"You can only select up to {Capacity} customers. Please select fewer customers.");
+                    TempData["ErrorMessage"] = $"You can only select up to {Capacity} customers. Please select fewer customers.";
                     model.Customers = await _context.Customers.Include(c => c.User).ToListAsync();
                     return View(model);
                 }
@@ -254,10 +260,11 @@ namespace ExamProjectOne.Controllers
                 _context.GroupTrainingCustomers.AddRange(newCustomers);
                 await _context.SaveChangesAsync();
 
+                TempData["SuccessMessage"] = "Updated successfully";
                 return RedirectToAction("Read");
             }
 
-            ModelState.AddModelError("", "You must select at least one customer.");
+            TempData["ErrorMessage"] = "You must select at least one customer.";
             model.Customers = await _context.Customers.Include(c => c.User).ToListAsync();
             return View(model);
         }
@@ -272,6 +279,7 @@ namespace ExamProjectOne.Controllers
             _context.GroupTrainings.RemoveRange(relatedGroupTrainings);
             _context.Schedules.Remove(schedule);
             await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = "Delete successfully";
             return RedirectToAction("Read");
         }
     }

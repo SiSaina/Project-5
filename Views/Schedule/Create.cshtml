@@ -3,33 +3,39 @@
     ViewData["Title"] = "Create Schedule";
 }
 
-<h1 class="text-center">Create Schedule</h1>
+<h1 class="text-center mt-4">Create group training</h1>
 
 <div class="container mt-4">
-    <form asp-action="Create" method="post" id="createScheduleForm">
+    <form asp-action="Create" method="post" id="createScheduleForm" class="border p-4 rounded bg-light shadow-sm">
         <div class="mb-3">
             <label class="form-label">Title</label>
-            <input type="text" class="form-control" asp-for="Title" required />
+            <input class="form-control" asp-for="Title" required />
+            <span asp-validation-for="Title" class="text-danger"></span>
         </div>
-
-        <div class="mb-3">
-            <label class="form-label">Start Time</label>
-            <input type="time" class="form-control" asp-for="StartTime" required />
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Start Time</label>
+                <input type="time" class="form-control" asp-for="StartTime" required />
+                <span asp-validation-for="StartTime" class="text-danger"></span>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">End Time</label>
+                <input type="time" class="form-control" asp-for="EndTime" required />
+                <span asp-validation-for="EndTime" class="text-danger"></span>
+            </div>
         </div>
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Date</label>
+                <input type="date" class="form-control" asp-for="Date" required />
+                <span asp-validation-for="Date" class="text-danger"></span>
+            </div>
 
-        <div class="mb-3">
-            <label class="form-label">End Time</label>
-            <input type="time" class="form-control" asp-for="EndTime" required />
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">Date</label>
-            <input type="date" class="form-control" asp-for="Date" required />
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">Capacity</label>
-            <input type="number" class="form-control" asp-for="Capacity" required min="1" />
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Capacity</label>
+                <input type="number" class="form-control" asp-for="Capacity" required min="1" />
+                <span asp-validation-for="Capacity" class="text-danger"></span>
+            </div>
         </div>
 
         <div class="mb-3">
@@ -41,6 +47,7 @@
                     <option value="@coach.Id">@coach.User.UserName</option>
                 }
             </select>
+            <span asp-validation-for="CoachId" class="text-danger"></span>
         </div>
         <div class="mb-3">
             <label class="form-label">Select gym hall</label>
@@ -51,11 +58,12 @@
                     <option value="@gym.Id">@gym.Name</option>
                 }
             </select>
+            <span asp-validation-for="GymHallId" class="text-danger"></span>
         </div>
 
-        <div class="mb-3">
-            <button type="submit" class="btn btn-primary">Create schedule</button>
-            <a class="btn btn-secondary" asp-action="Read">Cancel</a>
+        <div class="mb-3 d-flex justify-content-between">
+            <button type="submit" class="btn btn-outline-primary">Done</button>
+            <a asp-action="Read" class="btn btn-outline-secondary">Cancel</a>
         </div>
     </form>
 </div>
@@ -80,3 +88,23 @@
         }
     });
 </script>
+<style>
+    .form-label {
+        font-weight: bold;
+    }
+
+    .form-control, .form-select {
+        background-color: #f8f9fa;
+        border: 1px solid #ced4da;
+        border-radius: 0.375rem;
+    }
+
+    .form-control:focus {
+        border-color: #4CAF50;
+        box-shadow: 0 0 0 0.25rem rgba(76, 175, 80, 0.25);
+    }
+
+    .btn-outline-success, .btn-outline-secondary {
+        padding: 10px 20px;
+    }
+</style>

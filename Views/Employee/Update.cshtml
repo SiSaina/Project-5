@@ -4,142 +4,178 @@
     ViewData["Title"] = "Edit Employee";
 }
 
-<h2 class="text-center">Edit Employee</h2>
+<h1 class="text-center mb-4">Edit Employee</h1>
 
-<form asp-controller="Employee" asp-action="Update" method="post">
-    <div class="form-floating mb-3 w-100">
-        <input asp-for="IdStr" class="form-control bg-light" readonly />
-        <label asp-for="IdStr"></label>
-    </div>
+<div class="container">
+    <form asp-controller="Employee" asp-action="Update" method="post" class="border p-4 rounded bg-light shadow-sm">
 
-    <div class="form-floating mb-3">
-        <input asp-for="Username" class="form-control" required />
-        <label asp-for="Username">Username</label>
-        <span asp-validation-for="Username" class="text-danger"></span>
-    </div>
-    <div class="form-floating mb-3">
-        <input asp-for="FirstName" class="form-control" required />
-        <label asp-for="FirstName">FirstName</label>
-        <span asp-validation-for="FirstName" class="text-danger"></span>
-    </div>
-    <div class="form-floating mb-3">
-        <input asp-for="LastName" class="form-control" required />
-        <label asp-for="LastName">LastName</label>
-        <span asp-validation-for="LastName" class="text-danger"></span>
-    </div>
-    <div class="form-floating mb-3">
-        <input asp-for="Email" class="form-control" required />
-        <label asp-for="Email">Email</label>
-        <span asp-validation-for="Email" class="text-danger"></span>
-    </div>
-    <div class="form-floating mb-3">
-        <input asp-for="PhoneNumber" class="form-control" required />
-        <label asp-for="PhoneNumber">Phone Number</label>
-        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
-    </div>
-    <div class="form-floating mb-3">
-        <input asp-for="BirthDate" type="date" class="form-control" placeholder="Birth Date"/>
-        <label asp-for="BirthDate">Birth Date</label>
-        <span asp-validation-for="BirthDate" class="text-danger"></span>
-    </div>
-    <div class="mb-3">
-        <label asp-for="Gender" class="form-label">Gender</label>
-        <select asp-for="Gender" class="form-control" required>
-            <option value="">Select a gender</option>
-            <option value="Male">Male</option>
-            <option value="Female">Female</option>
-        </select>
-        <span asp-validation-for="Gender" class="text-danger"></span>
-    </div>
-
-    <div class="mb-3">
-        <label asp-for="Role" class="form-label">Role</label>
-        <select asp-for="Role" class="form-control" id="roleDropdown" required>
-            <option value="">Select a role</option>
-            @foreach (var role in Model?.RoleList)
-            {
-                <option value="@role">@role</option>
-            }
-        </select>
-    </div>
-
-    <div id="supervisorField" style="display: none;">
         <div class="mb-3">
-            <label asp-for="Status" class="form-label">Status</label>
-            <input type="text" asp-for="Status" class="form-control" id="statusField" readonly />
+            <label class="form-label">User ID</label>
+            <input asp-for="IdStr" class="form-control" readonly />
         </div>
-        <div class="mb-3">
-            <label asp-for="ShiftTime" class="form-label">Shift Time</label>
-            <select id="shiftTimeField" asp-for="ShiftTime" class="form-control" required>
-                <option value="">Select a shift</option>
-                <option value="7:30 AM - 5:00 PM">7:30 AM - 5:00 PM</option>
-                <option value="5:00 PM - 12:00 AM">5:00 PM - 12:00 AM</option>
-            </select>
-        </div>
-        <div class="mb-3">
-            <label asp-for="WorkDay" class="form-label">Work Days</label>
-            <select id="workDayField" asp-for="WorkDay" class="form-control" required>
-                <option value="">Select work days</option>
-                <option value="Monday - Friday">Monday - Friday</option>
-                <option value="Saturday - Sunday">Saturday - Sunday</option>
-            </select>
-        </div>
-        <div id="coachField" style="display: none;">
-            <div class="mb-3">
-                <label class="form-label">Skill</label>
-                <select asp-for="Skill" class="form-control">
-                    <option value="">Select a skill</option>
-                    <option value="Gym">Gym</option>
-                    <option value="Yoga">Yoga</option>
-                    <option value="Swimming">Swimming</option>
-                    <option value="Dance">Dance</option>
-                </select>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Username</label>
+                <input asp-for="Username" class="form-control" required />
+                <span asp-validation-for="Username" class="text-danger"></span>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Email</label>
+                <input asp-for="Email" class="form-control" required />
+                <span asp-validation-for="Email" class="text-danger"></span>
             </div>
         </div>
-    </div>
-    <button type="submit" name="action" value="Coach" class="btn btn-primary">Update Coach</button>
-    <button type="submit" name="action" value="Supervisor" class="btn btn-primary" >Update Supervisor</button>
-    <button type="submit" class="btn btn-primary">Update User</button>
-    <a asp-action="Read" class="btn btn-secondary">Cancel</a>
-</form>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">First Name</label>
+                <input asp-for="FirstName" class="form-control" required />
+                <span asp-validation-for="FirstName" class="text-danger"></span>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Last Name</label>
+                <input asp-for="LastName" class="form-control" required />
+                <span asp-validation-for="LastName" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Phone Number</label>
+                <input asp-for="PhoneNumber" class="form-control" required />
+                <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+            </div>
+            <div class="col-md-6 mb-3">
+                <label class="form-label">Birth Date</label>
+                <input asp-for="BirthDate" type="date" class="form-control" required />
+                <span asp-validation-for="BirthDate" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Gender</label>
+            <select asp-for="Gender" class="form-control" required>
+                <option value="">Select a gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+            </select>
+            <span asp-validation-for="Gender" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Role</label>
+            <select asp-for="Role" class="form-control" id="roleDropdown" required>
+                <option value="">Select a role</option>
+                @foreach (var role in Model?.RoleList)
+                {
+                    <option value="@role">@role</option>
+                }
+            </select>
+        </div>
+
+        <div id="supervisorField" style="display: none;">
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Status</label>
+                    <input asp-for="Status" id="statusField" class="form-control" readonly />
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Shift Time</label>
+                    <select asp-for="ShiftTime" id="shiftTimeField" class="form-control" required>
+                        <option value="">Select a shift</option>
+                        <option value="7:30 AM - 5:00 PM">7:30 AM - 5:00 PM</option>
+                        <option value="5:00 PM - 12:00 AM">5:00 PM - 12:00 AM</option>
+                    </select>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label class="form-label">Work Days</label>
+                    <select asp-for="WorkDay" id="workDayField" class="form-control" required>
+                        <option value="">Select work days</option>
+                        <option value="Monday - Friday">Monday - Friday</option>
+                        <option value="Saturday - Sunday">Saturday - Sunday</option>
+                    </select>
+                </div>
+            </div>
+
+            <div id="coachField" style="display: none;">
+                <div class="mb-3">
+                    <label class="form-label">Skill</label>
+                    <select asp-for="Skill" class="form-control">
+                        <option value="">Select a skill</option>
+                        <option value="Gym">Gym</option>
+                        <option value="Yoga">Yoga</option>
+                        <option value="Swimming">Swimming</option>
+                        <option value="Dance">Dance</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="mt-4 d-flex justify-content-between">
+            <div>
+                <button type="submit" name="action" value="Coach" class="btn btn-outline-primary">Update Coach</button>
+                <button type="submit" name="action" value="Supervisor" class="btn btn-outline-primary">Update Supervisor</button>
+            </div>
+            <div>
+                <button type="submit" class="btn btn-success">Update User</button>
+                <a asp-action="Read" class="btn btn-secondary">Cancel</a>
+            </div>
+        </div>
+    </form>
+</div>
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        var roleDropdown = document.getElementById("roleDropdown");
-        console.log(roleDropdown);
-
-        var supervisorField = document.getElementById("supervisorField");
-        var coachField = document.getElementById("coachField");
-
-        var statusField = document.getElementById("statusField");
-        var shiftTimeField = document.getElementById("shiftTimeField");
-        var workDayField = document.getElementById("workDayField");
-
+        const roleDropdown = document.getElementById("roleDropdown");
+        const supervisorField = document.getElementById("supervisorField");
+        const coachField = document.getElementById("coachField");
+        const statusField = document.getElementById("statusField");
+        const shiftTimeField = document.getElementById("shiftTimeField");
+        const workDayField = document.getElementById("workDayField");
 
         function toggleFieldsBasedOnRole() {
-            var role = roleDropdown.options[roleDropdown.selectedIndex].value;
-            console.log(role);
-
-            var role2 = roleDropdown.value;
-            console.log(role2);
+            const role = roleDropdown.value;
 
             supervisorField.style.display = (role === "Supervisor" || role === "Coach") ? "block" : "none";
-            coachField.style.display = role === "Coach" ? "block" : "none";
+            coachField.style.display = (role === "Coach") ? "block" : "none";
 
             if (role === "Coach") {
                 statusField.value = "@Model.StatusCoach";
                 shiftTimeField.value = "@Model.ShiftTimeCoach";
                 workDayField.value = "@Model.WorkDayCoach";
-
-            }
-            if (role === "Supervisor") {
+            } else if (role === "Supervisor") {
                 statusField.value = "@Model.StatusSupervisor";
                 shiftTimeField.value = "@Model.ShiftTimeSupervisor";
                 workDayField.value = "@Model.WorkDaySupervisor";
-
+            } else {
+                statusField.value = "";
+                shiftTimeField.value = "";
+                workDayField.value = "";
             }
         }
         roleDropdown.addEventListener("change", toggleFieldsBasedOnRole);
+        toggleFieldsBasedOnRole();
     });
-
 </script>
+
+<style>
+    .form-label {
+        font-weight: bold;
+    }
+
+    .form-control, .form-select {
+        background-color: #f8f9fa;
+        border: 1px solid #ced4da;
+        border-radius: 0.375rem;
+    }
+
+        .form-control:focus {
+            border-color: #4CAF50;
+            box-shadow: 0 0 0 0.25rem rgba(76, 175, 80, 0.25);
+        }
+
+    .btn-outline-success, .btn-outline-secondary {
+        padding: 10px 20px;
+    }
+</style>

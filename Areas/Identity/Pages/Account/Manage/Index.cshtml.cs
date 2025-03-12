@@ -10,6 +10,7 @@ using ExamProjectOne.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace ExamProjectOne.Areas.Identity.Pages.Account.Manage
 {
@@ -52,6 +53,7 @@ namespace ExamProjectOne.Areas.Identity.Pages.Account.Manage
         /// </summary>
         public class InputModel
         {
+            public string Id { get; set; }
             public string Email { get; set; }
             public string FirstName { get; set; }
             public string LastName { get; set; }
@@ -75,6 +77,7 @@ namespace ExamProjectOne.Areas.Identity.Pages.Account.Manage
 
             Input = new InputModel
             {
+                Id = user.Id,
                 PhoneNumber = await _userManager.GetPhoneNumberAsync(user),
                 Email = user.Email,
                 FirstName = user.FirstName,
@@ -98,7 +101,7 @@ namespace ExamProjectOne.Areas.Identity.Pages.Account.Manage
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync()
+        public async Task<IActionResult> OnPostAsync(string Mode)
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null)

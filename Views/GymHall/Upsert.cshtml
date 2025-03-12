@@ -1,20 +1,56 @@
 ﻿@model ExamProjectOne.Models.GymHall
 
-<h2>@(Model.Id == 0 ? "Create" : "Update") Gym Hall</h2>
+<h2 class="text-center mb-4">@(Model.Id == 0 ? "Create" : "Update") Gym Hall</h2>
 
-<form asp-action="Upsert" method="post">
-    <div class="mb-3">
-        <label class="form-label">Name</label>
-        <input asp-for="Name" class="form-control" />
-        <span asp-validation-for="Name" class="text-danger"></span>
-    </div>
+<div class="container">
+    <form asp-action="Upsert" method="post" class="card p-4 shadow-lg">
+        
+        <div class="mb-3">
+            <label class="form-label" for="Name">Name</label>
+            <input asp-for="Name" class="form-control" id="Name" placeholder="Enter gym hall name" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
 
-    <div class="mb-3">
-        <label class="form-label">Capacity</label>
-        <input asp-for="Capacity" class="form-control" />
-        <span asp-validation-for="Capacity" class="text-danger"></span>
-    </div>
+        <div class="mb-3">
+            <label class="form-label" for="Capacity">Capacity</label>
+            <input asp-for="Capacity" type="number" class="form-control" id="Capacity" placeholder="Enter capacity" />
+            <span asp-validation-for="Capacity" class="text-danger"></span>
+        </div>
 
-    <button type="submit" class="btn btn-success">Save</button>
-    <a asp-action="Read" class="btn btn-secondary">Cancel</a>
-</form>
+        <div class="d-flex justify-content-between mt-4">
+            <button type="submit" class="btn btn-success btn-lg">Save</button>
+            <a asp-action="Read" class="btn btn-secondary btn-lg">Cancel</a>
+        </div>
+        
+    </form>
+</div>
+<style>
+    .container {
+        max-width: 600px;
+        margin-top: 50px;
+    }
+    .card {
+        background-color: #f8f9fa;
+        border-radius: 10px;
+    }
+
+    .form-control {
+        background-color: #ffffff;
+        border: 1px solid #ced4da;
+        border-radius: 0.375rem;
+    }
+
+    .form-control:focus {
+        border-color: #4CAF50;
+        box-shadow: 0 0 0 0.25rem rgba(76, 175, 80, 0.25);
+    }
+
+    .btn {
+        padding: 10px 20px;
+        border-radius: 5px;
+    }
+
+    .btn-lg {
+        padding: 12px 24px;
+    }
+</style>

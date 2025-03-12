@@ -1,7 +1,7 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
 }
-
+@await Html.PartialAsync("_AlertMessage")
 <div class="hero-section">
     <div>
         <h1>Welcome to Gym Frog</h1>
@@ -12,7 +12,6 @@
     </div>
 </div>
 
-<!-- Features Section -->
 <div class="container features-section">
     <h2 class="text-center mb-5">Features</h2>
     <div class="row">

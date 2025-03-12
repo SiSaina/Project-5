@@ -4,8 +4,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace ExamProjectOne.Controllers
 {
@@ -13,6 +11,7 @@ namespace ExamProjectOne.Controllers
     {
         private readonly ApplicationDbContext _context;
         private readonly UserManager<ApplicationUser> _userManager;
+        private string? _userId;
 
         public AppointmentController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
@@ -23,7 +22,7 @@ namespace ExamProjectOne.Controllers
         [Authorize(Roles = "Admin, Senior supervisor, Senior coach, Supervisor, Coach")]
         public async Task<IActionResult> Read()
         {
-            var userId = _userManager.GetUserId(User);
+            var userId = await GetCurrentUserIdAsync();
             var appoint = await GetAppointmentsAsync(userId);
 
             var model = appoint.Select(a => new ScheduleModel
@@ -35,7 +34,8 @@ namespace ExamProjectOne.Controllers
                 Date = a.Schedule.Date,
                 CustomerOne = a.Customer,
                 CoachOne = a.Schedule.Coach,
-                GymHallOne = a.Schedule.GymHall
+                GymHallOne = a.Schedule.GymHall,
+                StatusAppoint = a.Status
             }).ToList();
 
             return View(model);
@@ -47,7 +47,7 @@ namespace ExamProjectOne.Controllers
         [Authorize(Roles = "Admin, Senior supervisor, Senior coach, Supervisor, Coach")]
         public async Task<IActionResult> Create()
         {
-            var userId = _userManager.GetUserId(User);
+            var userId = await GetCurrentUserIdAsync();
             var model = await GetScheduleModelAsync(null, userId);
             return View(model);
         }
@@ -57,12 +57,12 @@ namespace ExamProjectOne.Controllers
         {
             if (!ModelState.IsValid) return View(model);
 
-            var userId = _userManager.GetUserId(User);
+            var userId = await GetCurrentUserIdAsync();
             var coach = await _context.Coaches.Include(u => u.User).FirstOrDefaultAsync(c => c.UserId == userId);
 
             if (coach != null) await HandleCreate(model, coach.Id);
             if (coach == null) await HandleCreate(model, model.CoachId);
-
+            TempData["SuccessMessage"] = "Created successfully";
             return RedirectToAction("Read");
         }
 
@@ -83,13 +83,9 @@ namespace ExamProjectOne.Controllers
             if (!ModelState.IsValid) return View(model);
 
             var appoint = await _context.Appointments
-                .Include(c => c.Customer)
-                    .ThenInclude(u => u.User)
-                .Include(s => s.Schedule)
-                    .ThenInclude(g => g.GymHall)
-                .Include(s => s.Schedule)
-                    .ThenInclude(c => c.Coach)
-                        .ThenInclude(u => u.User)
+                .Include(c => c.Customer).ThenInclude(u => u.User)
+                .Include(s => s.Schedule).ThenInclude(g => g.GymHall)
+                .Include(s => s.Schedule).ThenInclude(c => c.Coach).ThenInclude(u => u.User)
                 .FirstOrDefaultAsync(s => s.Id == model.Id);
 
             if (appoint != null)
@@ -104,7 +100,7 @@ namespace ExamProjectOne.Controllers
 
                 await _context.SaveChangesAsync();
             }
-
+            TempData["SuccessMessage"] = "Update successfully";
             return RedirectToAction("Read");
         }
 
@@ -120,7 +116,7 @@ namespace ExamProjectOne.Controllers
 
             _context.Appointments.Remove(appoint);
             await _context.SaveChangesAsync();
-
+            TempData["SuccessMessage"] = "Delete successfully";
             return RedirectToAction("Read");
         }
 
@@ -177,7 +173,6 @@ namespace ExamProjectOne.Controllers
         }
         public async Task HandleCreate(ScheduleModel model, int id)
         {
-
             var schedule = new Schedule
             {
                 Title = model.Title,
@@ -194,11 +189,22 @@ namespace ExamProjectOne.Controllers
             var appoint = new Appointment
             {
                 ScheduleId = schedule.Id,
-                CustomerId = model.CustomerId
+                CustomerId = model.CustomerId,
+                Status = "Accept"
             };
 
             _context.Appointments.Add(appoint);
             await _context.SaveChangesAsync();
+        }
+        public async Task<string?> GetCurrentUserIdAsync()
+        {
+            if (_userId != null) return _userId;
+
+            var user = await _userManager.GetUserAsync(User);
+            if (user == null) return null;
+
+            _userId = user.Id;
+            return _userId;
         }
     }
 }
