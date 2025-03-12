@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ExamProjectOne.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250226040051_NewModelSupervisor")]
-    partial class NewModelSupervisor
+    [Migration("20250312105233_SeedRoles2")]
+    partial class SeedRoles2
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -33,12 +33,18 @@ namespace ExamProjectOne.Data.Migrations
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("int");
 
+                    b.Property<string>("CoachId")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("DateOfBirth")
-                        .HasColumnType("datetime2");
+                    b.Property<string>("CustomerId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateOnly>("DateOfBirth")
+                        .HasColumnType("date");
 
                     b.Property<string>("Email")
                         .HasMaxLength(256)
@@ -87,6 +93,9 @@ namespace ExamProjectOne.Data.Migrations
                     b.Property<string>("SecurityStamp")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("SupervisorId")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("bit");
 
@@ -115,31 +124,21 @@ namespace ExamProjectOne.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("CoachId")
-                        .HasColumnType("int");
-
                     b.Property<int>("CustomerId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("Date")
-                        .HasColumnType("datetime2");
-
-                    b.Property<TimeOnly>("EndTime")
-                        .HasColumnType("time");
-
-                    b.Property<int>("GymHallId")
+                    b.Property<int>("ScheduleId")
                         .HasColumnType("int");
 
-                    b.Property<TimeOnly>("StartTime")
-                        .HasColumnType("time");
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CoachId");
-
                     b.HasIndex("CustomerId");
 
-                    b.HasIndex("GymHallId");
+                    b.HasIndex("ScheduleId");
 
                     b.ToTable("Appointments");
                 });
@@ -152,21 +151,13 @@ namespace ExamProjectOne.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("EndDate")
-                        .HasColumnType("int");
-
-                    b.Property<TimeOnly>("EndTime")
-                        .HasColumnType("time");
-
-                    b.Property<string>("Specialization")
+                    b.Property<string>("ShiftTime")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("StartDate")
-                        .HasColumnType("int");
-
-                    b.Property<TimeOnly>("StartTime")
-                        .HasColumnType("time");
+                    b.Property<string>("Skill")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -175,6 +166,10 @@ namespace ExamProjectOne.Data.Migrations
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("WorkDay")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -215,20 +210,38 @@ namespace ExamProjectOne.Data.Migrations
                     b.Property<int>("Capacity")
                         .HasColumnType("int");
 
+                    b.Property<int>("ScheduleId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ScheduleId")
+                        .IsUnique();
+
+                    b.ToTable("GroupTrainings");
+                });
+
+            modelBuilder.Entity("ExamProjectOne.Models.GroupTrainingCustomer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
                     b.Property<int>("CustomerId")
                         .HasColumnType("int");
 
-                    b.Property<int>("ScheduleId")
+                    b.Property<int>("GroupTrainingId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CustomerId");
 
-                    b.HasIndex("ScheduleId")
-                        .IsUnique();
+                    b.HasIndex("GroupTrainingId");
 
-                    b.ToTable("GroupTrainings");
+                    b.ToTable("GroupTrainingCustomers");
                 });
 
             modelBuilder.Entity("ExamProjectOne.Models.GymHall", b =>
@@ -268,19 +281,19 @@ namespace ExamProjectOne.Data.Migrations
                     b.Property<TimeOnly>("EndTime")
                         .HasColumnType("time");
 
-                    b.Property<bool>("GroupSession")
-                        .HasColumnType("bit");
-
                     b.Property<int>("GymHallId")
                         .HasColumnType("int");
 
                     b.Property<TimeOnly>("StartTime")
                         .HasColumnType("time");
 
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("CoachId")
-                        .IsUnique();
+                    b.HasIndex("CoachId");
 
                     b.HasIndex("GymHallId");
 
@@ -295,17 +308,9 @@ namespace ExamProjectOne.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int>("EndDate")
-                        .HasColumnType("int");
-
-                    b.Property<TimeOnly>("EndTime")
-                        .HasColumnType("time");
-
-                    b.Property<int>("StartDate")
-                        .HasColumnType("int");
-
-                    b.Property<TimeOnly>("StartTime")
-                        .HasColumnType("time");
+                    b.Property<string>("ShiftTime")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Status")
                         .IsRequired()
@@ -314,6 +319,10 @@ namespace ExamProjectOne.Data.Migrations
                     b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("WorkDay")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
@@ -348,6 +357,44 @@ namespace ExamProjectOne.Data.Migrations
                         .HasFilter("[NormalizedName] IS NOT NULL");
 
                     b.ToTable("AspNetRoles", (string)null);
+
+                    b.HasData(
+                        new
+                        {
+                            Id = "1",
+                            Name = "Admin",
+                            NormalizedName = "ADMIN"
+                        },
+                        new
+                        {
+                            Id = "2",
+                            Name = "Customer",
+                            NormalizedName = "CUSTOMER"
+                        },
+                        new
+                        {
+                            Id = "3",
+                            Name = "Coach",
+                            NormalizedName = "COACH"
+                        },
+                        new
+                        {
+                            Id = "4",
+                            Name = "Senior coach",
+                            NormalizedName = "SENIOR COACH"
+                        },
+                        new
+                        {
+                            Id = "5",
+                            Name = "Supervisor",
+                            NormalizedName = "SUPERVISOR"
+                        },
+                        new
+                        {
+                            Id = "6",
+                            Name = "Senior supervisor",
+                            NormalizedName = "SENIOR SUPERVISOR"
+                        });
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -458,35 +505,27 @@ namespace ExamProjectOne.Data.Migrations
 
             modelBuilder.Entity("ExamProjectOne.Models.Appointment", b =>
                 {
-                    b.HasOne("ExamProjectOne.Models.Coach", "Coach")
-                        .WithMany()
-                        .HasForeignKey("CoachId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("ExamProjectOne.Models.Customer", "Customer")
                         .WithMany()
                         .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("ExamProjectOne.Models.GymHall", "GymHall")
-                        .WithMany()
-                        .HasForeignKey("GymHallId")
                         .OnDelete(DeleteBehavior.SetNull)
                         .IsRequired();
 
-                    b.Navigation("Coach");
+                    b.HasOne("ExamProjectOne.Models.Schedule", "Schedule")
+                        .WithMany()
+                        .HasForeignKey("ScheduleId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .IsRequired();
 
                     b.Navigation("Customer");
 
-                    b.Navigation("GymHall");
+                    b.Navigation("Schedule");
                 });
 
             modelBuilder.Entity("ExamProjectOne.Models.Coach", b =>
                 {
                     b.HasOne("ExamProjectOne.Data.ApplicationUser", "User")
-                        .WithOne()
+                        .WithOne("Coach")
                         .HasForeignKey("ExamProjectOne.Models.Coach", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -497,7 +536,7 @@ namespace ExamProjectOne.Data.Migrations
             modelBuilder.Entity("ExamProjectOne.Models.Customer", b =>
                 {
                     b.HasOne("ExamProjectOne.Data.ApplicationUser", "User")
-                        .WithOne()
+                        .WithOne("Customer")
                         .HasForeignKey("ExamProjectOne.Models.Customer", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -507,28 +546,39 @@ namespace ExamProjectOne.Data.Migrations
 
             modelBuilder.Entity("ExamProjectOne.Models.GroupTraining", b =>
                 {
-                    b.HasOne("ExamProjectOne.Models.Customer", "Customer")
-                        .WithMany()
-                        .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.SetNull)
-                        .IsRequired();
-
                     b.HasOne("ExamProjectOne.Models.Schedule", "Schedule")
                         .WithOne()
                         .HasForeignKey("ExamProjectOne.Models.GroupTraining", "ScheduleId")
                         .OnDelete(DeleteBehavior.SetNull)
                         .IsRequired();
 
+                    b.Navigation("Schedule");
+                });
+
+            modelBuilder.Entity("ExamProjectOne.Models.GroupTrainingCustomer", b =>
+                {
+                    b.HasOne("ExamProjectOne.Models.Customer", "Customer")
+                        .WithMany("GroupTrainingCustomers")
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.SetNull)
+                        .IsRequired();
+
+                    b.HasOne("ExamProjectOne.Models.GroupTraining", "GroupTraining")
+                        .WithMany("GroupTrainingCustomers")
+                        .HasForeignKey("GroupTrainingId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Customer");
 
-                    b.Navigation("Schedule");
+                    b.Navigation("GroupTraining");
                 });
 
             modelBuilder.Entity("ExamProjectOne.Models.Schedule", b =>
                 {
                     b.HasOne("ExamProjectOne.Models.Coach", "Coach")
-                        .WithOne()
-                        .HasForeignKey("ExamProjectOne.Models.Schedule", "CoachId")
+                        .WithMany("Schedules")
+                        .HasForeignKey("CoachId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -546,7 +596,7 @@ namespace ExamProjectOne.Data.Migrations
             modelBuilder.Entity("ExamProjectOne.Models.Supervisor", b =>
                 {
                     b.HasOne("ExamProjectOne.Data.ApplicationUser", "User")
-                        .WithOne()
+                        .WithOne("Supervisor")
                         .HasForeignKey("ExamProjectOne.Models.Supervisor", "UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -603,6 +653,30 @@ namespace ExamProjectOne.Data.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("ExamProjectOne.Data.ApplicationUser", b =>
+                {
+                    b.Navigation("Coach");
+
+                    b.Navigation("Customer");
+
+                    b.Navigation("Supervisor");
+                });
+
+            modelBuilder.Entity("ExamProjectOne.Models.Coach", b =>
+                {
+                    b.Navigation("Schedules");
+                });
+
+            modelBuilder.Entity("ExamProjectOne.Models.Customer", b =>
+                {
+                    b.Navigation("GroupTrainingCustomers");
+                });
+
+            modelBuilder.Entity("ExamProjectOne.Models.GroupTraining", b =>
+                {
+                    b.Navigation("GroupTrainingCustomers");
                 });
 #pragma warning restore 612, 618
         }

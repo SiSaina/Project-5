@@ -1,4 +1,5 @@
 ﻿using ExamProjectOne.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection.Emit;
@@ -11,6 +12,14 @@ namespace ExamProjectOne.Data
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+            builder.Entity<IdentityRole>().HasData(
+                new IdentityRole { Id = "1", Name = "Admin", NormalizedName = "ADMIN" },
+                new IdentityRole { Id = "2", Name = "Customer", NormalizedName = "CUSTOMER" },
+                new IdentityRole { Id = "3", Name = "Coach", NormalizedName = "COACH" },
+                new IdentityRole { Id = "4", Name = "Senior coach", NormalizedName = "SENIOR COACH"},
+                new IdentityRole { Id = "5", Name = "Supervisor", NormalizedName = "SUPERVISOR" },
+                new IdentityRole { Id = "6", Name = "Senior supervisor", NormalizedName = "SENIOR SUPERVISOR" }
+            );
 
             // one to one: coach -> user
             builder.Entity<Coach>()
