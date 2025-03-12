@@ -26,7 +26,7 @@ namespace ExamProjectOne.Controllers
                 .Include(gt => gt.GroupTrainingCustomers).ThenInclude(c => c.Customer).ThenInclude(u => u.User)
                 .AsQueryable();
 
-            if (User.IsInRole("Coach"))
+            if (GlobalRoleManager.ActiveRole == "Coach")
             {
                 query = query.Where(g => g.Schedule.Coach.UserId == id);
             }
@@ -175,20 +175,8 @@ namespace ExamProjectOne.Controllers
         [HttpPost]
         public async Task<IActionResult> Update(ScheduleModel model)
         {
-            var group = await _context.GroupTrainings.FindAsync(model.Id);
+            var group = await _context.GroupTrainings.Include(s => s.Schedule).FirstOrDefaultAsync(g => g.Id == model.Id);
             if (group?.Schedule == null) return NotFound();
-
-            bool isOverlapping = await _context.Schedules
-                .AnyAsync(s => s.CoachId == model.CoachId &&
-                               s.Id != model.Id &&
-                               s.Date == model.Date &&
-                               (model.StartTime < s.EndTime && model.EndTime > s.StartTime));
-
-            if (isOverlapping)
-            {
-                TempData["ErrorMessage"] = "Coach is unavailable at that moment";
-                return RedirectToAction("Read");
-            }
 
             group.Schedule.Title = model.Title;
             group.Schedule.StartTime = model.StartTime;

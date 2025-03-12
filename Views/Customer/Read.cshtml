@@ -43,7 +43,7 @@
                             <td>
                                 <div class="d-flex gap-2">
                                     <a asp-controller="Customer" asp-action="Update" asp-route-id="@customer.Id" class="btn btn-outline-warning text-black btn-sm"> Update </a>
-                                    @if (!(User.IsInRole("Coach") || User.IsInRole("Supervisor")))
+                                    @if (!(GlobalRoleManager.ActiveRole == "Coach" || GlobalRoleManager.ActiveRole == "Supervisor"))
                                     {
                                         <a asp-controller="Customer" asp-action="Delete" asp-route-id="@customer.Id" class="btn btn-outline-danger text-black btn-sm"> Delete </a>
                                     }

@@ -101,7 +101,7 @@ namespace ExamProjectOne.Areas.Identity.Pages.Account.Manage
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync(string Mode)
+        public async Task<IActionResult> OnPostAsync(InputModel input)
         {
             var user = await _userManager.GetUserAsync(User);
             if (user == null)
@@ -125,6 +125,16 @@ namespace ExamProjectOne.Areas.Identity.Pages.Account.Manage
                     return RedirectToPage();
                 }
             }
+
+            user.Email = input.Email;
+            user.FirstName = input.FirstName;
+            user.LastName = input.LastName;
+            user.Gender = input.Gender;
+            user.DateOfBirth = input.BirthDate;
+
+
+            var updateResult = await _userManager.UpdateAsync(user);
+            if (!updateResult.Succeeded) return RedirectToPage();
 
             await _signInManager.RefreshSignInAsync(user);
             StatusMessage = "Your profile has been updated";

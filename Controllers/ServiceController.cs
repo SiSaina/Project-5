@@ -173,7 +173,7 @@ namespace ExamProjectOne.Controllers
             if (customer == null) return NotFound("Customer not found");
             if (mode == "Group") await HandleUnJoinGroupAsync(id, customer);
             if (mode == "Appoint") await HandleUnJoinAppointAsync(id, customer);
-            TempData["SuccessMessage"] = "Action successfully";
+
             return RedirectToAction("ReadCustomer");
         }
 
@@ -187,16 +187,18 @@ namespace ExamProjectOne.Controllers
 
             _context.GroupTrainingCustomers.Remove(groupCustomer);
             await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = "Cancel successfully";
         }
         public async Task HandleUnJoinAppointAsync(int id, Customer customer) 
         {
-            var appointment = await _context.Appointments.Include(a => a.Customer).FirstOrDefaultAsync(a => a.Schedule.Id == id);
+            var appointment = await _context.Appointments.FirstOrDefaultAsync(a => a.Id == id);
 
             if (appointment == null) return;
             if (appointment.CustomerId != customer.Id) return;
 
             _context.Appointments.Remove(appointment);
             await _context.SaveChangesAsync();
+            TempData["SuccessMessage"] = "Cancel successfully";
         }
 
         private async Task<Customer?> GetCurrentCustomerAsync()

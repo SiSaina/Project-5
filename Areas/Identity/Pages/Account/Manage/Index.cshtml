@@ -17,7 +17,7 @@
         </div>
         <div class="row">
             <div class="form-floating col-md-6 mb-3">
-                <input asp-for="Username" class="form-control" placeholder="Choose your username" disabled />
+                <input asp-for="Username" class="form-control" placeholder="Choose your username" readonly />
                 <label class="form-label mx-2">Username</label>
             </div>
             <div class="form-floating col-md-6 mb-3">
@@ -79,13 +79,11 @@
 }
 <script>
     function enableEdit() {
-        // Hide the Update button
         document.getElementById("updateBtn").classList.add("d-none");
         document.getElementById("changePasswordBtn").classList.add("d-none");
-        // Show the Save Changes and Cancel buttons
+
         document.getElementById("saveBtn").classList.remove("d-none");
 
-        // Enable all form fields for editing
         const inputs = document.querySelectorAll('input, select');
         inputs.forEach(input => {
             input.disabled = false;
@@ -93,16 +91,11 @@
     }
 
     function cancelEdit() {
-        // Disable all form fields again
         const inputs = document.querySelectorAll('input, select');
         inputs.forEach(input => {
             input.disabled = true;
         });
-
-        // Hide Save Changes and Cancel buttons
         document.getElementById("saveBtn").classList.add("d-none");
-
-        // Show the Update button again
         document.getElementById("updateBtn").classList.remove("d-none");
         document.getElementById("changePasswordBtn").classList.remove("d-none");
     }

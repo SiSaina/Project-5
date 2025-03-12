@@ -101,7 +101,7 @@ namespace ExamProjectOne.Controllers
             return RedirectToAction("Read");
         }
 
-
+        
         // -------- Delete --------
 
         [HttpPost]
@@ -116,6 +116,30 @@ namespace ExamProjectOne.Controllers
             return RedirectToAction("Read");
         }
 
+        [HttpPost]
+        public async Task<IActionResult> Accept(int id)
+        {
+            var appointment = await _context.Appointments.FindAsync(id);
+            if (appointment == null) return NotFound();
+            appointment.Status = "Accept";
+            await _context.SaveChangesAsync();
+
+            TempData["SuccessMessage"] = "Appointment accepted successfully!";
+            return RedirectToAction("Read");
+        }
+        [HttpPost]
+        public async Task<IActionResult> Decline(int id)
+        {
+            var appointment = await _context.Appointments.FindAsync(id);
+            if (appointment == null) return NotFound();
+
+            appointment.Status = "Decline";
+            await _context.SaveChangesAsync();
+
+            TempData["ErrorMessage"] = "Appointment declined.";
+            return RedirectToAction("Read");
+        }
+
         private async Task<List<Appointment>> GetAppointmentsAsync(string id)
         {
             var query = _context.Appointments
@@ -124,7 +148,7 @@ namespace ExamProjectOne.Controllers
                 .Include(s => s.Schedule).ThenInclude(c => c.Coach).ThenInclude(u => u.User)
                 .AsQueryable();
 
-            if (User.IsInRole("Coach"))
+            if (GlobalRoleManager.ActiveRole == "Coach")
             {
                 query = query.Where(a => a.Schedule.Coach.UserId == id);
             }
@@ -138,7 +162,7 @@ namespace ExamProjectOne.Controllers
                 GymHalls = _context.GymHalls.ToList(),
             };
 
-            if (userId != null && User.IsInRole("Coach"))
+            if (userId != null && GlobalRoleManager.ActiveRole == "Coach")
             {
                 var coach = await _context.Coaches.Include(u => u.User).FirstOrDefaultAsync(c => c.UserId == userId);
                 if (coach != null) model.Coaches = [coach];
