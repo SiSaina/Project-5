@@ -117,7 +117,7 @@ namespace ExamProjectOne.Areas.Identity.Pages.Account
 
                 if (user == null) 
                 {
-                    ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                    ModelState.AddModelError(string.Empty, "Invalid login attempts.");
                     return Page();
                 }
 
